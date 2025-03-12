@@ -1,0 +1,132 @@
+package com.sample.mz.feature.home
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sample.appbase.exceptionmapper.ExceptionHandler
+import com.sample.appbase.utils.ResultState
+import com.sample.domain.home.model.ActorVo
+import com.sample.domain.home.model.MovieVo
+import com.sample.domain.movie.usecase.FavoriteMovieUseCase
+import com.sample.domain.home.usecase.FetchHomeDataUseCase
+import com.sample.domain.home.usecase.GetNowPlayingMoviesUseCase
+import com.sample.domain.home.usecase.GetPopularMoviesUseCase
+import com.sample.domain.home.usecase.GetPopularPeopleUseCase
+import com.sample.domain.home.usecase.GetUpComingMoviesUseCase
+import com.sample.domain.movie.usecase.GetMovieGenresUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
+
+ 
+
+@HiltViewModel
+class HomeNavPageViewModel @Inject constructor(
+    private val handler: ExceptionHandler,
+    private val fetchHomeDataUseCase: FetchHomeDataUseCase,
+    private val getNowPlayingMoviesUseCase: GetNowPlayingMoviesUseCase,
+    private val getUpComingMoviesUseCase: GetUpComingMoviesUseCase,
+    private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
+    private val getPopularPeopleUseCase: GetPopularPeopleUseCase,
+    private val getMovieGenresUseCase: GetMovieGenresUseCase,
+    private val favoriteMovieUseCase: FavoriteMovieUseCase
+) : ViewModel() {
+
+    var refreshing = mutableStateOf(false)
+        private set
+    var nowPlayingMovies = mutableStateOf<ResultState<List<MovieVo>>>(ResultState.Idle)
+        private set
+    var upComingMovies = mutableStateOf<ResultState<List<MovieVo>>>(ResultState.Idle)
+        private set
+    var popularMovies = mutableStateOf<ResultState<List<MovieVo>>>(ResultState.Idle)
+        private set
+    var popularPeople = mutableStateOf<ResultState<List<ActorVo>>>(ResultState.Idle)
+        private set
+
+
+    init {
+        // from database
+        getNowPlayingMovies()
+        getUpComingMovies()
+        getPopularMovies()
+        getPopularPeople()
+
+        // from network
+        fetchHomeData()
+        fetchMovieGenres()
+    }
+
+    private fun fetchHomeData() {
+        viewModelScope.launch {
+            runCatching {
+                fetchHomeDataUseCase()
+            }.getOrElse {
+                Timber.e(it)
+            }
+        }
+    }
+
+    private fun fetchMovieGenres() {
+        viewModelScope.launch {
+            runCatching {
+                getMovieGenresUseCase()
+            }.getOrElse {
+                Timber.e(it)
+            }
+        }
+    }
+
+    private fun getNowPlayingMovies() {
+        nowPlayingMovies.value = ResultState.Loading
+        viewModelScope.launch {
+            getNowPlayingMoviesUseCase().onStart { delay(3000) }.collectLatest {
+                if (it.isNotEmpty()) nowPlayingMovies.value = ResultState.Success(it)
+            }
+        }
+    }
+
+    private fun getUpComingMovies() {
+        upComingMovies.value = ResultState.Loading
+        viewModelScope.launch {
+            getUpComingMoviesUseCase().onStart { delay(3000) }.collectLatest {
+                if (it.isNotEmpty()) upComingMovies.value = ResultState.Success(it)
+            }
+        }
+    }
+
+    private fun getPopularMovies() {
+        popularMovies.value = ResultState.Loading
+        viewModelScope.launch {
+            getPopularMoviesUseCase().onStart { delay(3000) }.collectLatest {
+                if (it.isNotEmpty()) popularMovies.value = ResultState.Success(it)
+            }
+        }
+    }
+
+    private fun getPopularPeople() {
+        viewModelScope.launch {
+            getPopularPeopleUseCase().collectLatest {
+                if (it.isNotEmpty()) popularPeople.value = ResultState.Success(it)
+            }
+        }
+    }
+
+    fun refreshHomeData() {
+        refreshing.value = true
+        viewModelScope.launch {
+            delay(2000)
+            fetchHomeData()
+            refreshing.value = false
+        }
+    }
+
+    fun favoriteMovie(movieId: Int) {
+        viewModelScope.launch {
+            favoriteMovieUseCase(movieId)
+        }
+    }
+}

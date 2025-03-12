@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "419748175711",
+    "project_id": "koalatask-prod",
+    "storage_bucket": "koalatask-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419748175711:android:fdab3528d5c3d1cb65e0ea",
+        "android_client_info": {
+          "package_name": "com.sample.mz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbfSga62nR6eeoiG4dQTldIeH6Bgq29e0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
