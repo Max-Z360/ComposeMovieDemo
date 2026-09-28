@@ -1,0 +1,433 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "text_titles",
+      "folder": "01_text_titles",
+      "name": {
+        "en": "Text Titles",
+        "zh": "文字标题"
+      }
+    },
+    {
+      "id": "callouts_shapes",
+      "folder": "02_callouts_shapes",
+      "name": {
+        "en": "Callouts & Shapes",
+        "zh": "标注与形状"
+      }
+    },
+    {
+      "id": "emotions_reactions",
+      "folder": "03_emotions_reactions",
+      "name": {
+        "en": "Emotions & Reactions",
+        "zh": "情绪与反应"
+      }
+    },
+    {
+      "id": "time_date",
+      "folder": "04_time_date",
+      "name": {
+        "en": "Time & Date",
+        "zh": "时间与日期"
+      }
+    },
+    {
+      "id": "location_travel",
+      "folder": "05_location_travel",
+      "name": {
+        "en": "Location & Travel",
+        "zh": "地点与旅行"
+      }
+    },
+    {
+      "id": "food_life",
+      "folder": "06_food_life",
+      "name": {
+        "en": "Food & Life",
+        "zh": "美食与生活"
+      }
+    },
+    {
+      "id": "decorative",
+      "folder": "07_decorative",
+      "name": {
+        "en": "Decorative Elements",
+        "zh": "装饰元素"
+      }
+    },
+    {
+      "id": "arrows_highlights",
+      "folder": "08_arrows_highlights",
+      "name": {
+        "en": "Arrows & Highlights",
+        "zh": "箭头与强调"
+      }
+    },
+    {
+      "id": "transitions",
+      "folder": "09_transitions",
+      "name": {
+        "en": "Transition Elements",
+        "zh": "转场元素"
+      }
+    },
+    {
+      "id": "social_ui",
+      "folder": "10_social_ui",
+      "name": {
+        "en": "Social & UI",
+        "zh": "社交与界面"
+      }
+    },
+    {
+      "id": "backgrounds_overlays",
+      "folder": "11_backgrounds_overlays",
+      "name": {
+        "en": "Backgrounds & Overlays",
+        "zh": "背景与叠加"
+      }
+    }
+  ],
+  "stickers": [
+    {
+      "id": "title_good_day",
+      "category": "text_titles",
+      "name": {
+        "en": "Good Day ♡",
+        "zh": "美好的一天"
+      },
+      "tags": [
+        "good day",
+        "title",
+        "handwritten",
+        "pink",
+        "vlog",
+        "美好",
+        "标题",
+        "手写"
+      ],
+      "batch": 1,
+      "svg": "01_text_titles/title_good_day.svg",
+      "png": "01_text_titles/title_good_day.png",
+      "png_size": [
+        2048,
+        834
+      ],
+      "aspect_ratio": 2.4579,
+      "fonts": [
+        {
+          "family": "Satisfy",
+          "license": "Apache-2.0"
+        }
+      ]
+    },
+    {
+      "id": "callout_important",
+      "category": "callouts_shapes",
+      "name": {
+        "en": "Important! label",
+        "zh": "重点标签"
+      },
+      "tags": [
+        "important",
+        "label",
+        "note",
+        "paper",
+        "callout",
+        "重要",
+        "标签",
+        "便签"
+      ],
+      "batch": 1,
+      "svg": "02_callouts_shapes/callout_important.svg",
+      "png": "02_callouts_shapes/callout_important.png",
+      "png_size": [
+        2048,
+        974
+      ],
+      "aspect_ratio": 2.1027,
+      "fonts": [
+        {
+          "family": "Caveat",
+          "license": "OFL-1.1"
+        }
+      ]
+    },
+    {
+      "id": "reaction_heart_glossy",
+      "category": "emotions_reactions",
+      "name": {
+        "en": "Glossy heart",
+        "zh": "3D爱心"
+      },
+      "tags": [
+        "heart",
+        "love",
+        "like",
+        "3d",
+        "glossy",
+        "reaction",
+        "爱心",
+        "喜欢",
+        "点赞"
+      ],
+      "batch": 1,
+      "svg": "03_emotions_reactions/reaction_heart_glossy.svg",
+      "png": "03_emotions_reactions/reaction_heart_glossy.png",
+      "png_size": [
+        2048,
+        1886
+      ],
+      "aspect_ratio": 1.0854,
+      "fonts": []
+    },
+    {
+      "id": "time_camcorder_stamp",
+      "category": "time_date",
+      "name": {
+        "en": "Camcorder timestamp",
+        "zh": "摄像机时间戳"
+      },
+      "tags": [
+        "time",
+        "date",
+        "timestamp",
+        "camcorder",
+        "retro",
+        "vlog",
+        "时间",
+        "日期",
+        "复古"
+      ],
+      "batch": 1,
+      "svg": "04_time_date/time_camcorder_stamp.svg",
+      "png": "04_time_date/time_camcorder_stamp.png",
+      "png_size": [
+        2048,
+        912
+      ],
+      "aspect_ratio": 2.2449,
+      "fonts": [
+        {
+          "family": "DMMono",
+          "license": "OFL-1.1"
+        }
+      ]
+    },
+    {
+      "id": "travel_signpost",
+      "category": "location_travel",
+      "name": {
+        "en": "Travel signpost",
+        "zh": "旅行路牌"
+      },
+      "tags": [
+        "travel",
+        "signpost",
+        "trip",
+        "direction",
+        "vacation",
+        "旅行",
+        "路牌",
+        "出发"
+      ],
+      "batch": 1,
+      "svg": "05_location_travel/travel_signpost.svg",
+      "png": "05_location_travel/travel_signpost.png",
+      "png_size": [
+        1354,
+        2048
+      ],
+      "aspect_ratio": 0.6615,
+      "fonts": [
+        {
+          "family": "Fredoka",
+          "license": "OFL-1.1"
+        }
+      ]
+    },
+    {
+      "id": "food_bubble_tea",
+      "category": "food_life",
+      "name": {
+        "en": "Bubble tea",
+        "zh": "珍珠奶茶"
+      },
+      "tags": [
+        "bubble tea",
+        "boba",
+        "milk tea",
+        "drink",
+        "cafe",
+        "奶茶",
+        "珍珠奶茶",
+        "饮品",
+        "下午茶"
+      ],
+      "batch": 1,
+      "svg": "06_food_life/food_bubble_tea.svg",
+      "png": "06_food_life/food_bubble_tea.png",
+      "png_size": [
+        892,
+        2048
+      ],
+      "aspect_ratio": 0.4353,
+      "fonts": []
+    },
+    {
+      "id": "deco_sparkle_glow",
+      "category": "decorative",
+      "name": {
+        "en": "Glowing sparkle",
+        "zh": "闪光星芒"
+      },
+      "tags": [
+        "sparkle",
+        "star",
+        "glow",
+        "shine",
+        "bling",
+        "magic",
+        "闪光",
+        "星星",
+        "发光",
+        "氛围"
+      ],
+      "batch": 1,
+      "svg": "07_decorative/deco_sparkle_glow.svg",
+      "png": "07_decorative/deco_sparkle_glow.png",
+      "png_size": [
+        2048,
+        2048
+      ],
+      "aspect_ratio": 1.0,
+      "fonts": []
+    },
+    {
+      "id": "arrow_loop_pink",
+      "category": "arrows_highlights",
+      "name": {
+        "en": "Loopy doodle arrow",
+        "zh": "手绘绕圈箭头"
+      },
+      "tags": [
+        "arrow",
+        "doodle",
+        "hand drawn",
+        "loop",
+        "pointer",
+        "箭头",
+        "手绘",
+        "指向"
+      ],
+      "batch": 1,
+      "svg": "08_arrows_highlights/arrow_loop_pink.svg",
+      "png": "08_arrows_highlights/arrow_loop_pink.png",
+      "png_size": [
+        2048,
+        712
+      ],
+      "aspect_ratio": 2.8724,
+      "fonts": []
+    },
+    {
+      "id": "transition_countdown_3",
+      "category": "transitions",
+      "name": {
+        "en": "Film countdown 3",
+        "zh": "胶片倒计时 3"
+      },
+      "tags": [
+        "countdown",
+        "film",
+        "leader",
+        "intro",
+        "retro",
+        "cinema",
+        "倒计时",
+        "胶片",
+        "片头",
+        "复古"
+      ],
+      "batch": 1,
+      "svg": "09_transitions/transition_countdown_3.svg",
+      "png": "09_transitions/transition_countdown_3.png",
+      "png_size": [
+        2048,
+        1574
+      ],
+      "aspect_ratio": 1.3012,
+      "fonts": [
+        {
+          "family": "Oswald",
+          "license": "OFL-1.1"
+        }
+      ]
+    },
+    {
+      "id": "social_subscribe_button",
+      "category": "social_ui",
+      "name": {
+        "en": "Subscribe button",
+        "zh": "订阅按钮"
+      },
+      "tags": [
+        "subscribe",
+        "button",
+        "bell",
+        "cta",
+        "follow",
+        "订阅",
+        "关注",
+        "按钮",
+        "小铃铛"
+      ],
+      "batch": 1,
+      "svg": "10_social_ui/social_subscribe_button.svg",
+      "png": "10_social_ui/social_subscribe_button.png",
+      "png_size": [
+        2048,
+        890
+      ],
+      "aspect_ratio": 2.2994,
+      "fonts": [
+        {
+          "family": "PoppinsExtraBold",
+          "license": "OFL-1.1"
+        }
+      ]
+    },
+    {
+      "id": "overlay_film_dust",
+      "category": "backgrounds_overlays",
+      "name": {
+        "en": "Film dust & scratches (9:16)",
+        "zh": "胶片灰尘划痕 (竖屏)"
+      },
+      "tags": [
+        "overlay",
+        "film",
+        "dust",
+        "scratches",
+        "vintage",
+        "grain",
+        "胶片",
+        "灰尘",
+        "划痕",
+        "复古",
+        "叠加"
+      ],
+      "batch": 1,
+      "svg": "11_backgrounds_overlays/overlay_film_dust.svg",
+      "png": "11_backgrounds_overlays/overlay_film_dust.png",
+      "png_size": [
+        2160,
+        3840
+      ],
+      "aspect_ratio": 0.5625,
+      "fonts": []
+    }
+  ]
+}
