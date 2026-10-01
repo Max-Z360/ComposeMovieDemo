@@ -1,0 +1,9 @@
+node_modules/
+frames*/
+out/preview*/
+out/review*/
+out/a/
+out/b/
+*.log
+# font binaries are re-fetched by fonts/fetch.sh; the families used by the final film are force-added
+fonts/*.ttf
