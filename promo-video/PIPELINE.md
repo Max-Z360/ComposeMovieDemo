@@ -40,7 +40,7 @@ Rules:
 - Safe margins: keep text ≥ 80 px from the frame edge. Stage is fixed 1920x1080, `overflow: hidden`.
 - Fonts: only families from `src/fonts.css` (local, OFL). No web requests at all (the sandbox blocks them). Pre-load every family/weight you use with `document.fonts.load('300 120px Fraunces')` before resolving READY.
 - Global CSS: `*,*::before,*::after{transition:none!important;animation:none!important}`; hide off-shot scenes with `display:none` via timeline `set()` calls (opacity:0 still rasterizes).
-- Timing source of truth: `src/cues.json` (bpm, hit times, scene in/out). Both index.html and audio/track.js read it.
+- Timing source of truth: `src/cues.js` — a plain script that defines `const CUES = {bpm, hits:[...], scenes:{...}}` and ends with `if (typeof module !== "undefined") module.exports = CUES;` so `index.html` loads it with a `<script>` tag and `audio/track.js` loads it with `require("../src/cues.js")`. (Do not `fetch()` a JSON file: file:// pages cannot fetch.)
 - See `brief/03_feasibility.md` for measured costs and recipes (grain tiles, low-res aurora canvas, fake glass, phone mockup, card library).
 
 ## Commands

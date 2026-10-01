@@ -58,7 +58,7 @@ async function main() {
 
   const { chromium } = loadPlaywright();
   const browser = await chromium.launch({
-    args: ['--disable-gpu-vsync', '--disable-frame-rate-limit', '--font-render-hinting=none', '--disable-lcd-text', '--hide-scrollbars'],
+    args: ['--disable-gpu-vsync', '--disable-frame-rate-limit', '--font-render-hinting=none', '--disable-lcd-text', '--hide-scrollbars', '--allow-file-access-from-files'],
   });
 
   // Probe duration with a scout page.
