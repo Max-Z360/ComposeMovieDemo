@@ -38,7 +38,10 @@ Rules:
 - Canvases: draw as `draw(ctx, t)`; keep them inside `seek(t)`. Canvas is 2D software rendered — big per-frame radial gradients and `filter` on canvas are expensive; precompute static textures (grain tiles, gradients) once into offscreen canvases and composite them.
 - Performance budget: `< 150 ms/frame` at 1920x1080 (check with `node tools/render.js --end 3`); avoid `backdrop-filter`, big `filter: blur()` on large layers every frame, and SVG filters over large areas. Blur-in text is fine (small elements, short windows).
 - Safe margins: keep text ≥ 80 px from the frame edge. Stage is fixed 1920x1080, `overflow: hidden`.
-- Fonts: only families from `src/fonts.css` (local, OFL). No web requests at all (the sandbox blocks them).
+- Fonts: only families from `src/fonts.css` (local, OFL). No web requests at all (the sandbox blocks them). Pre-load every family/weight you use with `document.fonts.load('300 120px Fraunces')` before resolving READY.
+- Global CSS: `*,*::before,*::after{transition:none!important;animation:none!important}`; hide off-shot scenes with `display:none` via timeline `set()` calls (opacity:0 still rasterizes).
+- Timing source of truth: `src/cues.json` (bpm, hit times, scene in/out). Both index.html and audio/track.js read it.
+- See `brief/03_feasibility.md` for measured costs and recipes (grain tiles, low-res aurora canvas, fake glass, phone mockup, card library).
 
 ## Commands
 
@@ -47,8 +50,8 @@ Rules:
 node tools/render.js --scale 0.5 --jpeg --frames frames_prev && tools/encode.sh frames_prev out/preview.mp4 audio/track.wav 30 20 && tools/sheet.sh frames_prev out/review_prev 30 1 6
 # render a time window only
 node tools/render.js --start 12 --end 18 --frames frames_win
-# full quality (~100 ms/frame with 4 workers)
-node tools/render.js && tools/encode.sh frames out/final.mp4 audio/track.wav 30 17 && tools/sheet.sh frames out/review 30 1 6
+# full quality master: JPEG q95 frames (PNG of grainy frames costs 10x more to encode and gains nothing after x264 4:2:0)
+node tools/render.js --jpeg --quality 95 && tools/encode.sh frames out/final.mp4 audio/track.wav 30 17 && tools/sheet.sh frames out/review 30 1 6
 # audio
 node audio/track.js && tools/audio-check.sh audio/track.wav
 ```

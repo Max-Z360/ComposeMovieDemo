@@ -13,8 +13,10 @@
  *
  * Usage:
  *   node tools/render.js [--fps 30] [--start 0] [--end DURATION] [--workers 4] [--scale 1]
- *                        [--frames frames] [--page src/index.html] [--jpeg]
+ *                        [--frames frames] [--page src/index.html] [--jpeg] [--quality 95]
  *   --scale 0.5  -> 960x540 preview frames (deviceScaleFactor), fast iteration
+ *   --jpeg       -> JPEG frames (q95 default). Use for the master too: PNG-encoding grainy/soft-gradient
+ *                   1080p frames costs 0.6-1.1 s each, JPEG q95 ~40-70 ms, and x264 output is 4:2:0 anyway.
  */
 const path = require('path');
 const fs = require('fs');
@@ -28,7 +30,7 @@ function loadPlaywright() {
 
 function parseArgs() {
   const a = process.argv.slice(2);
-  const o = { fps: 30, start: 0, end: null, workers: Math.max(1, Math.min(4, os.cpus().length)), scale: 1, frames: 'frames', page: 'src/index.html', jpeg: false, width: 1920, height: 1080 };
+  const o = { fps: 30, start: 0, end: null, workers: Math.max(1, Math.min(4, os.cpus().length)), scale: 1, frames: 'frames', page: 'src/index.html', jpeg: false, quality: 95, width: 1920, height: 1080 };
   for (let i = 0; i < a.length; i++) {
     const k = a[i];
     if (k === '--jpeg') { o.jpeg = true; continue; }
@@ -40,6 +42,7 @@ function parseArgs() {
     else if (k === '--scale') o.scale = +v;
     else if (k === '--frames') o.frames = v;
     else if (k === '--page') o.page = v;
+    else if (k === '--quality') o.quality = +v;
     else if (k === '--width') o.width = +v;
     else if (k === '--height') o.height = +v;
   }
@@ -99,7 +102,7 @@ async function main() {
         const t = f / opts.fps;
         await page.evaluate(t => window.seek(t), t);
         const file = path.join(framesDir, `f${String(f).padStart(5, '0')}.${ext}`);
-        const shot = await cdp.send('Page.captureScreenshot', opts.jpeg ? { format: 'jpeg', quality: 92 } : { format: 'png', optimizeForSpeed: true });
+        const shot = await cdp.send('Page.captureScreenshot', opts.jpeg ? { format: 'jpeg', quality: opts.quality } : { format: 'png', optimizeForSpeed: true });
         fs.writeFileSync(file, Buffer.from(shot.data, 'base64'));
         done++;
         if (done % 60 === 0 || done === total) {
