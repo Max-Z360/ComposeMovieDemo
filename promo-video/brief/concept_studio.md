@@ -1,177 +1,174 @@
-# Concept — CREATOR STUDIO angle
+# Concept C — "Instrument" (Creator Studio angle)
 
-**Concept title:** *The Instrument*
-**Placeholder brand:** **LUNE** (from 01_positioning; kept as a single `BRAND_NAME` constant; wordmark is live type, not an asset, so the swap is one edit — see §3.6 for the ORIEL/SABLE fallbacks)
-**Master tagline:** **Chosen, not ranked.**
-**Film spine line (studio angle):** *Make it here.*
-**Duration:** 42.0 s picture + 1.0 s black tail (file = 43 s). Master 1920×1080 @ 30 fps, 16:9, no letterbox bars.
-**Tempo grid:** 84 BPM · beat 0.714 s · bar 2.857 s (bars at 0 / 2.857 / 5.714 / 8.571 / 11.429 / 14.286 / 17.143 / 20.000 / 22.857 / 25.714 / 28.571 / 31.429 / 34.286 / 37.143 / 40.000).
-
----
-
-## 1. The idea (one paragraph)
-
-A creator's single piece of work sits alone in the dark, lit like an object on a bench — then it is buried under an avalanche of grey, flickering, low-grade thumbnails until it is gone. Black. One hardware click. A tungsten hairline draws across the frame and the work comes back, full-bleed and bright, on the screen of a device that behaves like a pro instrument — a camera body, a synth, a colour console — not a feed. We stay inside that instrument: a ridged dial grades the image, a crop frame snaps to a detent, a title is set in a serif, a price slider lands on a number, "Publish" fills with light, a supporter quietly joins. Then the same piece appears printed on paper, chosen for an issue, before the light leaves the page and the last sliver becomes the LUNE mark. **The single promise:** *here, your work is treated like work — made with real tools, chosen by people, and paid for.* The viewer (a reach-fatigued creator) should feel the specific, physical satisfaction of a well-made tool — the detent, the click, the number landing — and read it as respect.
-
-Arc (from positioning §5): recognition of fatigue (0–8.6 s) → exhale (8.6–11.4) → desire (11.4–17.9) → capability (17.9–28.6) → dignity (28.6–35.7) → invitation (35.7–42).
+| | |
+|---|---|
+| **Concept title** | **Instrument** — the app treated as a pro instrument on a dark bench, seen from the creator's point of view |
+| **Brand name** | **Tipmi** (final). Wordmark set lowercase: **tipmi** (see §3.2) |
+| **Tagline (end line)** | **Built for the work.** — the master line *Chosen, not ranked.* is used inside the film at the curation beat (shot 11) and can be swapped into the end-card slot without re-timing (both are 3–4 words) |
+| **CTA** | Now open for creators. |
+| **Duration** | **42.0 s** total (41.0 s picture + 1.0 s black/silent tail); 1920×1080, 16:9, 30 fps, master `DURATION = 42` |
+| **Tempo grid** | 84 BPM · beat 0.714 s · bar 2.857 s · bar boundaries at 0 / 2.86 / 5.71 / 8.57 / **11.43** / 14.29 / 17.14 / 20.00 / 22.86 / 25.71 / **28.57** / 31.43 / 34.29 / **37.14** / 40.00 |
+| **On-screen lines** | 12 (incl. tagline + CTA), max 4 words, max 22 chars; UI strings are part of the mockup and live in the same `COPY` object |
 
 ---
 
-## 2. Why "instrument", not "app"
+## 1. The idea
 
-Every incumbent's launch film shows *people holding phones* and *a feed scrolling*. We show **controls** — the thing creators already love about a camera, a mixing desk, Lightroom's panel. The product is a surface you *operate*, and every operation is shot like a macro of hardware: hairlines, ridges, detents, readouts. The feed exists (it's the proof of curation, §4 shot 6) but it is a gallery you walk through on the way to the bench, not the hero. This is the one framing none of Instagram / RedNote / OnlyFans can borrow: they are places you *post to*; LUNE is a thing you *make with*, that then shows the result to the right people and pays you.
+A creator spends hours on one piece and watches it disappear in seconds. In this film the piece never disappears again: it is the single carrier object of a 41-second continuous take, and the viewer *is* the creator — first person, hands never shown, every move is theirs. Out of the dark, Tipmi powers on around the work like a well-made instrument (part camera, part synth, part DAW): a dial with detents, a live scope, a type ruler, a long-press send. Each tool beat is one physical gesture that feels good — a ratchet, a snap, a switch — and the last gesture is being paid, shown as quietly as a tile on a bench. The viewer should feel **competence and calm**: *this is a place built for people who make things, and it treats the making — and the maker — seriously.* The single promise: **Tipmi is built for the work** — to make it, to be chosen for it, to be paid for it — and then it gets out of the way so you can go back to work.
 
----
-
-## 3. Visual language
-
-### 3.1 Palette (hex)
-
-| Role | Name | Hex | Notes |
-|---|---|---|---|
-| Base field | Ink | `#0A0A0C` | Film base; blacks lifted in grade to ≈ `#0E0E10` |
-| Surface | Anodized | `#121215` | Console/phone body; 2 % vertical brushed gradient (`repeating-linear-gradient`, 1 px pitch, ±1.5 % L) |
-| Panel | Slate | `#1A1A1F` | Tool tray, feed cards' chrome |
-| Hairline | — | `rgba(255,255,255,.12)` | All rules, ticks, bezels; `.06` for card borders |
-| Display text | Bone | `#ECE6DA` | Serif lines on dark |
-| Caption text | Ash | `#9A9AA3` | UI labels, credits, readouts |
-| **Accent (≤ 5 % of frames)** | **Tungsten** | **`#D2A45A`** | Dial indicator, slider knob, mode-strip active tab, "Publish" fill, supporter dot, the logo sliver. Never on text, never as a glow. |
-| Paper interlude | Paper | `#F1EDE6` | Shot 13 only; ink text `#161616`, captions `#6E6A63` |
-| Content world (inside cards) | Umber / Clay / Rose-dust / Slate-blue / Moss / Bone | `#6B4A3A` `#B8755A` `#C9A196` `#4A5C6E` `#5A6B52` `#E8DFD0` | All cards graded through one `palette(h,s,l)` function: hue family ± 30°, shared black point `#0E0E10`, soft highlight roll-off, +4 % warmth in mids |
-| Junk world (tension only) | — | clipped white `#FFFFFF`, acid magenta `#FF2BB0`, cyan `#19D7FF`, grey `#3A3A3A` | Deliberately outside the grade; the only saturated colour in the film, and it is the enemy |
-
-One grade across the film (lifted blacks RGB 10–12, roll-off, warm mids) applied as a final full-frame `mix-blend-mode` layer in page plus `-tune film` at encode.
-
-### 3.2 Typography (Google Fonts, all already in `fonts/`)
-
-Exactly two families on screen + mono for readouts (the "tiny label" exception; it is what makes the instrument read as an instrument).
-
-| Role | Face | Setting | Size @1080p |
-|---|---|---|---|
-| Display (emotion lines, wordmark) | **Fraunces** variable | `opsz 144`, `wght 300`, `SOFT 0`, tracking −1.5 %, leading 1.0, left-aligned | **96 px** (8.9 %); wordmark 120 px (11 %) |
-| In-card title (shot 10 only) | Fraunces Italic | `wght 300→400` over 700 ms (the single variable-weight moment) | 44 px inside the 420×560 card |
-| UI / captions / CTA / tagline (end) | **Geist** | `wght 500`, tracking +4 % on caps labels, +1 % otherwise; `tabular-nums` | **22 px** (2.0 %) |
-| Readouts (console numbers) | **Geist Mono** | `wght 400`, tabular | 20 px, Ash |
-| zh swap | Noto Sans SC | `wght 300` display / `500` captions | same sizes |
-
-Layout: **everything left-aligned to one margin column at x = 172 px (9 %)**, baseline grid 8 px. Display lines sit at y = 744 (lower third) in dark scenes, y = 696 on paper; captions at y = 792. Instrument UI occupies the right 62 % of the frame. The end card is left-aligned too (masthead feel) — we never mix centred and margin layouts.
-
-Type motion: masked rise 600 ms expo-out (`cubic-bezier(.16,1,.3,1)`) with 50 ms word stagger for every serif line; exits 380 ms expo-in with 6 px drift *up* (the film's direction of travel); the wordmark uses blur-in (10 px → 0, scale 1.03 → 1, 650 ms quint-out) plus one SVG `clipPath` light sweep. No typewriter, no bounce, no shadow/stroke/glow/gradient text.
-
-### 3.3 Motion language (5 rules)
-
-1. **Light leads, objects follow.** Every transition starts with a light event (a hairline drawing, a key-light sweep, a glare crossing the bezel, a page darkening) and the object moves 80–120 ms *after* the light. Static gradients are forbidden; the key light is a gradient mask moving ≈ 1 px/frame.
-2. **Controls move like hardware.** Dials: 500–700 ms expo-out, overshoot ≤ 1.5 °. Sliders and segmented controls snap to **detents** (stepped, not continuous) with a 25 ms tick. Toggles: 400 ms. Nothing bounces, nothing pops from 0 %; every element enters from 94 % scale or from a mask.
-3. **One direction of travel: up and in.** The camera always pushes toward the screen (1–3 % per shot). The single reversal is the tension beat, where the world pulls *away* from the creator's work; the turn resets to black.
-4. **One carrier for the whole film.** The hero card (a warm "still-life" abstract, 4:5) is the only object that survives every transform: lit card → buried → phone screen → full-bleed → feed cell → editor canvas → graded/cropped/titled → published post → printed page → (its last light) → logo sliver. Match-cut on position and shape at every hand-off.
-5. **Rest.** Each shot holds its last 20 % with nothing new entering; no two elements start or stop on the same frame (offsets 60–220 ms).
-
-### 3.4 Textures, glass, light
-
-- **Grain:** 8 pre-baked 512² seeded tiles, `createPattern`, offset from `hash(floor(t·24))`, `mix-blend-mode: soft-light`, 4 % (6 % in shots 1–3, 5 % on paper, slightly stronger in shadows via a second `overlay` pass masked to luminance < 30 %).
-- **Vignette:** 12 % ellipse; 20 % in shots 1–3; 6 % on paper.
-- **Glass (one material, used twice):** the editor's floating tool tray (shots 8–11, one continuous element) and the supporter notification (shot 12). Fake glass per feasibility §1.3: `rgba(255,255,255,.07)`, 1 px `.14` hairline, inner top highlight, pre-blurred low-res copy of the background canvas clipped to the panel. No `backdrop-filter` anywhere.
-- **Light:** one tungsten key light (`#D2A45A` at 14 % over a 900 px soft radial, baked into the low-res background canvas) that drifts left→right across the console at ~1 px/frame; bloom only from the hero card's own edge-light, baked into its canvas (< 8 %). Never on text.
-- **Surfaces:** anodized brushed gradient on body/console; 1 px hairline tick rings (SVG) on dials; ridged dial edge via `repeating-conic-gradient` (72 ridges, ±6 % L).
-- **Letterbox:** none. 16:9 throughout; the instrument needs the area.
-
-### 3.5 Device treatment
-
-The phone appears **once**, large and lit (shot 5): CSS 3D, `perspective 1800px`, `rotateY(-18°) rotateX(6°)`, height ≈ 78 % of frame, right of the margin column; bezel radius 56/46 px, 1 px edge highlight, one 60/120 px soft shadow, glare gradient whose angle tracks the key light, mirrored reflection masked to 60 % and blurred 4 px on the dark floor. It rises from 94 % scale / +40 px and settles over 1.1 s while the camera pushes in 3 %. In shot 6 the push-in continues until the bezel leaves frame and the rotation eases to 0 — **the UI goes full-bleed and flat and stays flat for the rest of the film** (Linear/Apple treatment). No spin, no second phone, no hands.
-
-### 3.6 "Content" without photographs
-
-A seeded library of 24 cards (420×560, built once at `READY`, identical on every worker), all graded through the one palette function so the feed reads as *curated*:
-
-- **Soft-blob still lifes (40 %)** — 3–5 radial gradients in an analogous pair (clay/rose-dust, slate-blue/bone, moss/umber), `lighter` blend, drawn at 105×140 and upscaled, with a single bright edge-light and a 10 % vignette. Reads as studio photography of fabric, ceramics, skin tones, light on a wall.
-- **Flow-field prints (25 %)** — 2 500 short polylines on a `sin/cos` angle field, 1 px, 25 % alpha, umber ink on bone or bone on ink.
-- **Typographic posters (20 %)** — one Fraunces word or numeral ("No. 4", "Ouvert", "Winter, I", "§") rotated 90°, cropped by the card; a Geist caption line. Real type = real editorial work.
-- **Geometric (15 %)** — 3–6 rectangles/arcs on a strict grid, ink/bone/one umber.
-
-Every card carries a credit line in Geist 20 px (seeded name list: *Mara Lindqvist, Tomas Reyes, Ines Marlow, Kenji Sato, Aurelie Bastien, Noor Haddad…*) and a tiny curation tag ("Selected · Issue 12"). **The hero card** is a soft-blob still life in clay / rose-dust / umber with a warm edge-light at upper-right; its parameters are exposed (`warmth`, `exposure`, `crop`, `title`) so shots 8–10 re-render it per frame as pure functions of `t` at 105×140 → upscale (cost ≈ 1 ms).
-
-**Junk cards** (tension only): 18 cards generated at 64×48 with hard RGB noise, clipped whites, acid magenta/cyan bars, a blurry blob, upscaled with `imageSmoothingEnabled=false` (blocky), sitting 4:3 inside a 9:16 black tile with a small play-triangle and a "0:07"-style duration chip — generic low-grade video, recognisable as a *category*, never as a specific platform's chrome.
-
-Brand swap: `BRAND_NAME = "LUNE"`; the mark is a separate `<svg id="mark">` (a 1 px hairline circle with a tungsten crescent sliver). If the name becomes ORIEL, swap the mark for a thin rectangular frame; SABLE keeps the circle without the sliver.
+What it is *not*: a demo. The UI never explains itself, there are only three tool verbs, no cursor arrows, no spinning phone, no metrics ticking up, nothing bright except one amber lamp.
 
 ---
 
-## 4. Storyboard
+## 2. Visual language
 
-Copy rules: 9 counted lines (8 display + 1 notification), each ≤ 6 words / ≤ 32 chars, each readable ≥ 1.2 s (dwell computed per craft §2 incl. +0.3 s for animated entry). The console's **mode strip** (`GRADE · FRAME · TYPE · PRICE`, one persistent segmented control, active tab in Tungsten) and wordmark-in-top-bar are UI chrome, not lines; ≤ 3 UI strings visible per shot.
+### 2.1 Palette (dark decided once; no paper interludes — the "breath" comes from stripping the UI, not changing the world)
 
-| # | In → Out | Dur | What we see (drawable: HTML/CSS/canvas/SVG) | On-screen copy (exact) | Motion | Sound cue |
-|---|---|---|---|---|---|---|
-| 1 | 0.000 → 3.571 | 3.57 | **HOOK.** Ink field, 6 % grain, 20 % vignette. At 0.4 s the hero card (soft-blob still life, 4:5, ≈ 30 % frame height) fades up from 94 % at right-centre, lit by a soft key light from upper-right; a thin shadow under it as if on a bench. From 2.4 s, dim junk tiles begin arriving from all four edges toward it (parallax back layer), 60 ms stagger, 8–12 visible by the cut. | **Made more. Seen less.** (Fraunces 96, in 0.9 s, out 3.3 s; 4 w / 21 ch; dwell 2.4 s) | Card push-in 2 % over the shot; key light drifts 1 px/f; tiles slide in expo-out 700 ms, scale 0.96→1. | Room tone (−40 dB LP noise) + 55 Hz sub drone fading in from −∞; near-silence ≥ 1.5 s. Hats enter as 8ths at 2.857 at −24 dB. |
-| 2 | 3.571 → 6.429 | 2.86 | **TENSION A.** Hard cut on beat 5. The field is now a 12-column wall of junk tiles (≈ 90 visible, DOM, static canvases). Each frame `hash(frame)` picks 3–4 tiles to flash brighter (flicker). The hero card is still visible, now ¼ size, slightly off-centre, dimming to 60 %. | — | **Camera pulls back 4 %** (the film's single reversal); wall drifts down-left 1.2× parallax; flicker at 24 fps cadence. | Hats go to 16ths at 4.286; filtered noise bed swells (LP fc 300→1 200 Hz); pad enters very dark (fc 300 Hz, −18 dB) at 5.714. |
-| 3 | 6.429 → 8.571 | 2.14 | **TENSION B.** Cut to a tighter crop of the wall (tiles ≈ 2× larger, blocky noise clearly visible, duration chips, play-triangles). The hero card is pushed down out of frame by tiles layering over it; the last we see is its warm edge-light at the bottom edge. Flicker peaks. | — | Wall continues down-left; tiles slide over the card with 40 ms stagger; vignette 20 %. | Noise swell to fc 6 kHz, hats 16ths at −18 dB, sub rises; everything **hard-stops at 8.571**. |
-| 4 | 8.571 → 11.429 | 2.86 | **TURN.** Hard cut to Ink. Nothing for 0.7 s (full drop-out). At 9.286 a small hardware toggle (SVG, 44 px, anodized, hairline bezel) at the margin column flips ON; 80 ms later a 1 px Tungsten hairline draws left→right across the full width at y = 540 (SVG `stroke-dashoffset`, 900 ms expo-out) — the instrument waking. The hairline is the carrier into shot 5 (it becomes the phone's top edge). | — (no line; the click speaks) | Toggle 400 ms expo-out; hairline 900 ms; field stays black. | **Silence 8.571–9.286.** Hit A at 9.286: hardware click (25 ms band-passed noise 2–4 kHz + 80 Hz sine blip, 60 ms, dry). Nothing else until the downbeat. |
-| 5 | 11.429 → 15.000 | 3.57 | **REVEAL.** On the downbeat the hairline stretches into the top bezel edge of a CSS 3D phone (−18° Y / 6° X, 78 % frame height, right of margin) that rises from 94 % / +40 px and settles. Screen: the **hero card full-bleed in LUNE's post view** — bright, graded, with credit "Mara Lindqvist" and tag "Selected · Issue 12" beneath; top bar shows the wordmark `LUNE` at 22 px (brand small by 11.6 s). Key light sweeps across the glass; reflection on the floor. | **Only the work worth seeing.** (in 11.9, out 14.6; 5 w / 27 ch; dwell 2.7 s) | Phone settle 1.1 s expo-out; push-in 3 % across the shot; glare angle tracks the key light; line masked rise. | **Downbeat 11.429:** pad opens (fc jump to 1.2 kHz, A-minor-9), sub lands on A1, soft thump (120→60 Hz). Delay 375 ms on pad. |
-| 6 | 15.000 → 17.857 | 2.86 | **PROOF — THE FEED.** Continuous transform: the push-in continues until the bezel leaves frame and rotation eases to 0 → UI is full-bleed and flat. The post view scrolls down (`translateY`) into the curated feed: 2-column masonry of library cards with credits and "Selected" tags, generous gutters, no counters, no autoplay. The hero card is the first cell, now a grid member. | **Chosen, not ranked.** (in 15.3, out 17.5; 3 w / 19 ch; dwell 2.2 s). "Chosen" firms `wght 300→500` over 700 ms. | Bezel exit + flatten 1.4 s (slow symmetrical bezier); feed scroll 1.6 s expo-out, resolves on bar 6 (17.143); 3-layer parallax 1 : 1.6 : 2.2. | Hit on 15.000 (beat 21, soft thump); chord change Am9 → Fmaj7 at 17.143; hats 8ths at −22 dB; one tri layer enters at −14 dB. |
-| 7 | 17.857 → 19.286 | 1.43 | **HINGE — INTO THE STUDIO.** The hero card lifts out of the grid toward camera (scale 1→1.45, z-up), the feed falls back 24 px and dims to 35 % (rack-focus blur 4 px on the back layer only). The card lands as the editor canvas at right; beneath it the **console strip** slides up from a mask: anodized surface, the mode strip `GRADE · FRAME · TYPE · PRICE` (GRADE active, Tungsten), one ridged dial, a histogram (canvas), two mono readouts. The glass tool tray (material use #1) fades in at 92 %. | **Make it here.** (in 18.0, out 19.85 — persists 0.55 s into shot 8 before the GRADE readouts change; 3 w / 13 ch; dwell 1.85 s) | Card lift 800 ms expo-out; feed recede 900 ms; console strip masked rise 700 ms (starts 120 ms after the card lands). | Transform starts on beat 25 (17.857); UI tick 1 (paper tick, 30 ms, −16 dB) when the console lands at 18.7. |
-| 8 | 19.286 → 21.429 | 2.14 | **GRADE.** Macro of the dial (ridged edge, 24 tick marks, Tungsten indicator) with the hero card above it. Readouts `EXPOSURE +0.30` and `WARMTH 5600 K` in Geist Mono. The dial rotates 38° and the card visibly re-grades (warmer, brighter; re-rendered per frame from `warmth(t)`, `exposure(t)`); the histogram slides right. | mode strip: **GRADE** (chrome) | Dial 600 ms expo-out from 19.55, 1.2° overshoot; readouts interpolate from `t` (never from tween state); push-in 2 %. | UI tick 2 on dial engage 19.55 (−16 dB); detent tick at 20.15; pad fully open, hats 16ths at −20 dB. |
-| 9 | 21.429 → 23.571 | 2.14 | **FRAME.** Mode strip active tab moves to FRAME (Tungsten slides 300 ms). A hairline crop rectangle with corner marks and rule-of-thirds lines (8 % white) sits on the card; a segmented ratio control `4:5 · 1:1 · 3:4` snaps 4:5 → 1:1. The card re-composes (crop parameter `crop(t)`), the gutters tighten, the card's edge-light now sits exactly on a thirds line. | mode strip: **FRAME** (chrome) | Crop frame tightens 550 ms expo-out; segmented detent snap 180 ms; push-in 2 %. | Detent tick 3 at 21.75; chord → Cmaj7add9 at 22.857. |
-| 10 | 23.571 → 25.714 | 2.14 | **TYPE.** Active tab → TYPE. A title rises onto the card's lower-left from a mask in Fraunces Italic: *Still life, no. 4*; beneath it Geist credit *Mara Lindqvist · 2026*. A weight slider nudges 300 → 400 (the variable-font moment; block is left-aligned, fixed width). Tracking settles +4 % → 0. | in-card title *Still life, no. 4* (in-card content, 4 w / 17 ch; held 1.9 s) | Title masked rise 600 ms; weight tween 700 ms quint-out; slider knob to detent 220 ms; push-in 1.5 %. | Detent tick 4 at 24.05; tri layer up −12 dB; hats −18 dB (tempo peak zone). |
-| 11 | 25.714 → 28.571 | 2.86 | **PRICE.** Active tab → PRICE. The console strip becomes one long horizontal slider `MONTHLY` with detents `2 · 4 · 6 · 8 · 12`, a Tungsten knob, and a mono readout `4.00 USD` that interpolates (computed from `t`) as the knob travels from 2 to 4; one small toggle `Tips · on`. The card above is finished (graded, cropped, titled). No dollar signs anywhere. | **Your work. Your terms.** (in 26.0, out 28.4; 4 w / 22 ch; dwell 2.4 s) | Knob travel 650 ms expo-out from 25.95 landing on the detent; readout tabular roll; push-in 2 %. | Detent tick 5 at 26.6 (the last UI tick); chord → G6/B at 28.571 feels like a lift. |
-| 12 | 28.571 → 31.429 | 2.86 | **PUBLISH — DIGNITY.** A wide hairline button `Publish` at the console's right end **fills with Tungsten left→right** (500 ms, the one moment the accent exceeds a dot). The card lifts (carrier) into the live post view with its credit and price chip. At 29.6 the glass notification (material use #2) slides down from the top edge with a small Tungsten dot. Then everything strips back — the tool tray fades, the feed behind is quiet. | **Ines M. · Supporter** (notification, in 29.6, out 31.4; 3 w / 19 ch; dwell 1.8 s) | Fill 500 ms linear-with-ease (a light event, so linear is allowed); card lift 700 ms expo-out; notification 500 ms expo-out, 8 px drift; push-in 1.5 %. | Hit B at 28.75: soft reversed-air swell 300 ms into a muted tick (the Publish sound). Sub side-chain dip −6 dB / 150 ms; pad LP starts closing to 700 Hz; hats drop out at 29.286. |
-| 13 | 31.429 → 35.714 | 4.29 | **THE PAGE (paper interlude).** Hard cut on bar 11 to Paper `#F1EDE6`, grain 5 %. The finished hero card sits as a printed plate (≈ 62 % frame height, right of margin, 1 px ink hairline, soft paper shadow); a thin caption column reads *Mara Lindqvist — Still life, no. 4* / *Selected · Issue 12*. A soft daylight gradient drifts across the paper. From 34.9 the page darkens from left to right like a moon phase — the light leaving — until only a thin lit sliver remains at the plate's right edge at 35.714 (carrier into the logo mark). | **Seen by the right people.** (ink, in 31.9, out 34.6; 5 w / 25 ch; dwell 2.7 s) | Push-in 2 % over 4.3 s (the one deliberately long hold; the light move keeps it alive); darkening wipe 800 ms slow symmetrical bezier. | Music strips to pad + sub, LP down to 500 Hz, delay tails; chord → Fmaj7 at 31.429; riser (noise LP 200 → 8 000 Hz, u²) begins 35.0 and ends exactly on 37.143. |
-| 14 | 35.714 → 42.000 | 6.29 | **LOGO / CTA.** The sliver becomes the Tungsten crescent inside a 1 px hairline circle (the mark, 56 px) at the margin column, y = 492. The wordmark **LUNE** (Fraunces 300, 120 px) blur-rises beside/below it, reaching 90 % of position at **37.143**; a `clipPath` light sweep crosses it 37.2–38.0. Tagline and CTA appear beneath in Geist 22 px (Bone, then Ash). Picture holds, then fades to black 41.0–41.8; black to 42.0; +1.0 s black tail. Nothing else on the card: mark + wordmark + two lines. | **Chosen, not ranked.** (Geist 22, in 37.7, holds to 41.0; 3 w) · **Now open for creators.** (Ash, in 38.9, holds to 41.0; 4 w / 22 ch) | Mark morph 600 ms; wordmark blur-in 650 ms quint-out; sweep 800 ms; lines masked rise; whole card push-in 1 % over 4 s; fade-out 800 ms expo-in. | **Hit C at 37.143 (onset = wordmark at 90 %):** sub thump 120→60 Hz + additive chime (A5/E6, partials ×[1, 2.01, 3.0, 4.2, 5.4]) + the riser's reversed-air tail. Reverb tail only after 38.5; **−∞ by 40.9; silence 40.9–43.0.** |
-
-Checks against the craft guide: product visible at 11.4 s (≤ 12) ✓ · brand small at 11.6 s, big at 37.1 s ✓ · 3 consecutive negative shots max (1–3) ✓ · peak tempo 23.6–28.6 s (56–68 % — slightly early; fine, the paper beat needs the room) · shortest shot 1.43 s (hinge), longest hold 4.29 s with light moving ✓ · ≈ 60 % transforms (5→6→7→8→9→10→11→12, 13→14) / 40 % cuts (1|2|3|4|5, 12|13) ✓ · silence ×3 (open, turn, tail) ✓ · one glass material ×2 ✓ · accent ≈ 4 % of frames ✓.
-
----
-
-## 5. Music and sound (all synthesized in Node → WAV)
-
-**Tempo / key:** 84 BPM, A minor (Am9 home), 48 kHz, one cue of 43 s. Shared `cues.json` drives both the GSAP timeline and the synth:
-
-```json
-{ "bpm": 84, "fps": 30, "duration": 43.0,
-  "bars": [0,2.857,5.714,8.571,11.429,14.286,17.143,20.0,22.857,25.714,28.571,31.429,34.286,37.143,40.0],
-  "cuts": [3.571,6.429,8.571,11.429,15.0,17.857,19.286,21.429,23.571,25.714,28.571,31.429,35.714],
-  "hits": { "click":9.286, "downbeat":11.429, "feed":15.0, "publish":28.75, "logo":37.143 },
-  "ticks": [18.7,19.55,20.15,21.75,24.05,26.6],
-  "silence": [[0,1.6],[8.571,9.286],[40.9,43.0]],
-  "chords": [[11.429,"Am9"],[17.143,"Fmaj7"],[22.857,"Cmaj7add9"],[28.571,"G6/B"],[31.429,"Fmaj7"],[37.143,"Am9"]] }
-```
-
-**Structure (aligned to the storyboard):**
-
-| Time | Picture | Audio |
+| Role | Hex | Use |
 |---|---|---|
-| 0.000–2.857 | Hook | Room tone (seeded noise, LP 400 Hz, −40 dB) + 55 Hz sine sub fading in over 2.5 s to −18 dB. ≥ 1.5 s near-silence satisfied. |
-| 2.857–5.714 | Hook tail / Tension A | Hats: seeded noise bursts, HP 7 kHz, `exp(−t·60)`, 8ths at −24 dB, L/R alternating (Haas 10 ms). Noise bed LP sweeps 300 → 1 200 Hz. |
-| 5.714–8.571 | Tension B | Hats to 16ths, −18 dB; pad enters dark (3 detuned saws ×4 notes A2–E3–G3–B3, LP fc 300 Hz, −18 dB); noise swell LP → 6 kHz, amplitude u²; sub rises to −12 dB. **Hard stop at 8.571** (all voices gated, no release). |
-| 8.571–9.286 | Turn (silence) | Nothing. |
-| 9.286 | Click | 25 ms band-passed noise (LP 4 kHz − LP 2 kHz) + 80 Hz sine blip 60 ms, dry, −10 dB. |
-| 9.286–11.429 | Hairline | Silence except a −30 dB sub swell from 10.7. |
-| 11.429 | **Downbeat** | Thump (sine 120 → 60 Hz over 80 ms, decay 300 ms); pad LP jumps to 1.2 kHz with 0.7 Hz ±300 Hz LFO, L/R fc 1 : 1.03; sub A1 at −12 dB; 375 ms feedback delay (fb 0.35, mix 0.25, 3 kHz LP in loop) on pad; Schroeder reverb mix 0.3 on pad/chime only (sub dry). |
-| 11.429–17.857 | Reveal / Feed | Am9 → Fmaj7 at 17.143; soft thump on 15.000; hats 8ths −22 dB; triangle layer +1 oct −14 dB from 15.0. |
-| 17.857–28.571 | Studio / feature run | Hats 16ths rising −20 → −18 dB; LP fully open (2 kHz); chords Cmaj7add9 (22.857), G6/B (28.571); **UI ticks** (paper ticks: 30 ms noise through 2–4 kHz band, −16 dB, 14 dB under music) at 18.7, 19.55, 20.15, 21.75, 24.05, 26.6 — six, of which five are detents and one is the console landing. |
-| 28.571–31.429 | Publish / Dignity | Hit B at 28.75: reversed air (noise LP 6 kHz, amplitude rising u³ over 300 ms) into a muted tick; sub side-chain dip −6 dB / 150 ms; hats out at 29.286; pad LP closes to 700 Hz. |
-| 31.429–35.714 | Paper | Pad + sub only, Fmaj7, LP 500 Hz, delay tails audible; riser 35.0 → 37.143 (noise LP 200 → 8 000 Hz exponential, amplitude u², plus a sine rising one octave A4→A5). |
-| 37.143 | **Logo hit** | Sub thump (120 → 60 Hz, 300 ms) + additive chime at A5/E6 (partials ×[1, 2.01, 3.0, 4.2, 5.4], amp 1/(j+1), decay `exp(−t·(2+2j))`) + the riser's last 400 ms acting as the reversed-air lead-in. Am9 pad hit with 3 s release. |
-| 37.143–40.9 | Hold | Pad release + reverb/delay tails only; −∞ by 40.9. |
-| 40.9–43.0 | Tail | Digital silence. |
+| Bench black | `#0B0B0D` (grades to ≈ `#101012` after lifted blacks) | Field for every shot |
+| Surface | `#141417` | Bench top under the key light |
+| Panel | `#1B1B20` | Studio panels, phone bezel interior |
+| Hairline | `rgba(255,255,255,.10)` | 1 px panel edges, dial ticks (inactive) |
+| Ink | `#ECE8E1` (warm bone) | All display type, wordmark |
+| Ink 2 | `#8F8C87` | UI labels, captions, CTA |
+| Ink 3 | `#55534F` | Inactive readouts, dimmed UI |
+| **Accent — "lamp"** | **`#D8A04A`** (desaturated amber, like a status LED / darkroom safelight) | ONLY: the status LED, the dial's active tick, the Edition toggle flash, the SEND ring, the "Selected" dot, the two i‑dots of the wordmark. Budget: < 0.3 % of pixel area in UI frames; a larger "moment" (SEND ring, logo dots) in ≤ 5 % of frames |
+| Content world | clay `#B8674A` · bone `#E6DCCB` · slate `#3A4A5C` · moss `#5B6B55` · indigo `#2A2F4F` | Every generated card is graded through one palette function: hues anchored at 20° (clay) and 220° (slate) ± 30°, shared black point `#101012`, soft highlight roll-off. The feed must look like one curator chose it |
 
-**Five sound-design hits:** (1) the hardware click at 9.286 — the only dry, close sound in the film; (2) the downbeat thump at 11.429; (3) five detent ticks in the feature run (18.7–26.6) — the instrument's tactility; (4) the Publish swell-into-tick at 28.75; (5) the logo thump + chime at 37.143. One logo sound only; no per-element swooshes.
+Grade (one pass over the whole film, done in-page): blacks lifted to RGB 10–12, midtones +2 % warmth, no saturation above 60 % anywhere except inside a card. Instagram magenta/orange and XHS red are absent by construction.
 
-**Mix:** raw render aimed at ≈ −16 LUFS / peaks −3 dBFS; `loudnorm` two-pass `linear=true` to −14 LUFS / −1 dBTP (LRA target 7–9 — the drop-outs give it); re-measure the muxed MP4 with `ebur128=peak=true`. Cuts land on or 1–2 frames after accents, never before.
+### 2.2 Typography (Google Fonts, already in `fonts/`)
+
+| Role | Face | Size @1080p | Settings |
+|---|---|---|---|
+| Voice lines (all 12 lines + tagline) | **Fraunces** variable, `opsz 144`, `wght 300`, `SOFT 30` | **96 px** (8.9 % of frame height), leading 1.0 | tracking −1.5 %, left-aligned at x = 173 px (9 % margin), baseline on the 8 px grid at **y = 236** for every shot (upper-left negative space, above the bench UI); only the end card moves the baseline |
+| UI labels / captions / CTA | **Geist** `wght 500` | **22 px** (2 %) | caps, tracking +5 %; ≤ 3 words per label (GRADE · FRAME · PRICE · SEND, Selected, New supporter) |
+| UI body (names, titles in feed, readouts) | **Geist** `wght 450` | 26 px | sentence case; readouts use `font-variant-numeric: tabular-nums` (no third family for numbers) |
+| One mono label | **Geist Mono** `wght 400` | 20 px | the single tiny label "tipmi studio · 1.0" top-left of the studio UI; nowhere else |
+| Wordmark | **Geist** `wght 500`, lowercase | 176 px (x‑height ≈ 92 px) | tracking −2 %; built as an SVG from `BRAND_NAME` at build time (§2.6) |
+| zh swap | **Noto Sans SC** `wght 300` (lines) / `450` (UI) | same sizes | `?lang=zh` swaps the `COPY` set and the display family only; timeline untouched |
+
+Exactly two families on screen at any time (Fraunces + Geist); Geist Mono appears once, at label size.
+
+### 2.3 Motion language (5 rules)
+
+1. **One direction of travel.** Everything in the film advances *up and toward the camera* (push-ins of 1–3 % on every plate, panels rise from below, the card lifts up and out, the wordmark rises). The only reversal is the hook's "vanish" (shot 2), where the card falls *away* — that is the problem, and the film never moves backwards again.
+2. **Instrument physics.** Controls move in **detents**: the dial, the stepper, the crop and the toggle tween in quantized steps with expo-out (`cubic-bezier(0.16,1,0.3,1)`) between steps, 120–220 ms. Nothing in the UI floats or eases-in-out "like PowerPoint". Every detent has a sound; every sound has a detent.
+3. **One carrier, never cut away.** The hero piece (one generated card) is on screen from frame 0 to 37.1 s. It develops → vanishes → returns → is graded → framed → priced → sent → chosen → supported → replaced by the next blank tray. Every transition is a transform of that object (match-cut on shape and position); hard cuts exist only in the tension beat, at the turn, and into the logo.
+4. **Light is the camera.** A single key light (a low-res canvas gradient mask) drifts across the bench at ~1 px/frame all film long; panel top hairlines and the phone's glare follow it. No static gradients anywhere. Rack-focus (2–4 px blur on a flattened snapshot, never on a 3D ancestor) is used once, at the human beat.
+5. **Enter from masks or 94 %, never from zero.** Type: masked rise 600 ms expo-out, word stagger 50 ms; exits at 60 % of entry duration, expo-in, drifting 6 px *upward* (the next shot's direction). Secondary elements offset 60–120 ms, tertiary 120–220 ms; no two elements share a start or stop frame; every shot rests ≥ 20 % with nothing new entering.
+
+### 2.4 Textures
+
+- **Grain**: 8 pre-baked 512² seeded tiles via `createPattern`, swapped at a 24 fps cadence (`floor(t*24) % 8`) even though the master is 30 fps, `mix-blend-mode: soft-light`, **4 %** (6 % in shots 2–4), stronger in shadows by construction of the blend.
+- **Vignette**: 12 % normally, 20 % in hook/tension, one full-frame radial div.
+- **Glass**: exactly one material — `rgba(255,255,255,.07)` fill, 1 px `rgba(255,255,255,.14)` hairline, top inner highlight, pre-blurred copy of our own background canvas clipped inside ("fake glass", no `backdrop-filter`). Used three times: the touch ring (shot 7), the supporter tile (shot 12), and nothing else — the phone's bottom bar is plain panel.
+- **Bloom**: only from the amber lamp and the SEND ring, baked into the low-res background canvas as `lighter` radial gradients, intensity < 8 %, never on text.
+- **Bench sheen**: a faint anisotropic highlight band in the low-res canvas that travels with the key light — reads as a matte surface under a lamp, not a gradient.
+- **Imperfection**: the card sits slightly off the panel grid (−6 px); the human beat holds 0.8 s longer than needed; the tray in shot 13 is a hair brighter than the bench, like a real work surface.
+
+### 2.5 Device treatment
+
+The studio UI is shown **flat and full-bleed** (Linear/Apple style) — the camera is on the bench, the instrument fills the frame. A device appears **once**: shot 11, a CSS‑3D phone standing on the bench (`perspective 1800px`, `rotateY(-16deg) rotateX(5deg)`, 86 % frame height, 56/46 px radii, one big soft shadow, 22 % masked reflection on the bench, glare gradient tweened with the key light, 2 % push-in). It never rotates to camera, never spins; it fades out through the rack-focus in shot 13.
+
+### 2.6 How "content" is depicted (no photos)
+
+- **The hero piece**: one "studio light" card (420×560 source, soft radial blobs in clay/bone/slate, `lighter` blend, low-res + upscale, subtle vignette) — reads as an abstract still-life / fabric study. Its title in the app is "Still, no. 4".
+- **The developing effect (shot 1)**: 24 pre-baked keyframes of a seeded dissolve (per-pixel threshold of a hashed noise tile against a rising value, darks resolve first — the way a print comes up in a developer tray), picked by `t`; no per-frame ImageData work.
+- **The noisy wall (shots 2–4)**: ~300 cells from the seeded library drawn dim (35 % luminance), then degrading to flat grey rectangles — the generic feed as texture, no competitor UI.
+- **The Tipmi feed (shots 11–12)**: ~10 visible cards from the seeded library in the feasibility mix (40 % soft blobs, 25 % flow fields, 25 % typographic posters in Fraunces/Geist, 10 % geometric), all through the one palette function; 20 px radius, 1 px `rgba(255,255,255,.06)` border; captions from a curated name/title list ("Noor A. — Lido, 7 am", "Tomas R. — Clay study II", "Hana I. — Quiet hours"). No like counts, no follower counts, no avatars with faces (monogram discs in Ink 3).
+- **Instrument graphics**: histogram/scope = canvas recomputed from the hero card's actual pixel data at `READY` for each of the 7 grade steps; dial = SVG with 36 ticks; crop/ruler = SVG hairlines; all in Hairline/Ink 2, one amber active element.
+- **Swappable constants** (one `constants.js`): `BRAND_NAME = "Tipmi"` (wordmark builder lowercases it and, if the name contains `i`/`j`, replaces each tittle with a separate amber circle — so the "status light" motif is a *feature of the builder*, not a dependency on the name); `TAGLINE`, `CTA`, `SPLIT = "90%"`, `EDITION = 25`, `PRICE = 40`, `SUPPORTER_NAME = "Mara K."`, `COPY = {en, zh}`, `cues.json`.
 
 ---
 
-## 6. Why this beats generic "social app" ads — and 3 risks
+## 3. Storyboard
+
+Grid: 84 BPM. All times in seconds from frame 0; shots start on beats, transforms resolve on the next bar. Voice lines sit at x = 173 / baseline y = 236 unless noted. Dwell = visible time including the 600 ms rise.
+
+| # | In–Out | Dur | Beat | What we see (drawable with HTML/CSS/canvas/SVG) | On-screen copy (exact) | Motion | Sound cue |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.00–3.57 | 3.57 | **Hook A** | Black bench, vignette 20 %. Centre-right: one card-sized rectangle (52 % frame height) *developing* — the hero piece resolves out of seeded grain, darks first (24 pre-baked dissolve frames). Bottom-left of frame: a single 6 px amber LED, steady. Nothing else. | **Hours to make.** (0.60–3.20; dwell 2.6 s) | Card push-in 2 % over the shot. Line: masked rise 600 ms expo-out, word stagger 50 ms; exits 3.20 (360 ms, expo-in, 6 px up). | Near-silence: room tone (LP noise −40 dB) + 55 Hz sub drone −18 dB. No pad, no pulse. |
+| 2 | 3.57–5.71 | 2.14 | **Tension 1** | The finished card snaps smaller and falls *away* from camera into a wall of ~300 dim cards (4 columns, scrolling up). It is carried down the wall and dims to 30 %. | **Seconds to vanish.** (3.75–5.60; dwell 1.85 s) | The film's only reversal: card scale 1 → 0.42, expo-in 500 ms; wall scroll `y(t)` smoothstep, accelerating. Grain 6 %. | Hats enter on 8ths (−20 dB). Sub starts pulsing per bar. |
+| 3 | 5.71–7.14 | 1.43 | **Tension 2** | Hard cut: tighter on the wall; scroll 2×; cards drawn with 3 sub-step trails (motion smear); the hero is a dim warm speck sliding down out of frame. | — | 3-layer parallax (bg 1 : cards 1.6 : vignette 2.2). No type. | Hats to 16ths. Noise riser begins (200 Hz LP → 8 kHz exp over 5.71–8.57). Pad enters very dark (fc 300 Hz, −14 dB). |
+| 4 | 7.14–8.57 | 1.43 | **Tension 3** | Hard cut: the wall has lost its images — flat grey rectangles only, max scroll, vignette 20 %, overall brightness falls to 20 % by 8.50. | — | Near-linear scroll with tiny ease-out; brightness ramp expo-in. | Riser peaks at 8.57; sub pitch falls 55 → 41 Hz (8.20–8.57). Everything stops dead at 8.57. |
+| 5 | 8.57–11.43 | 2.86 | **Turn** | Black. 0.72 s of nothing. At 9.29 the LED blinks once; the hero card fades up alone, centred, larger (62 % frame height), lit by a key light from the upper left. First hard cut of the film ends the negative run (3 shots). | **Not here.** (9.60–11.20; dwell 1.6 s) | Card scale 0.96 → 1.00 over 1.4 s quint-out; key light drifts 1 px/frame; vignette back to 12 %. | **Full drop-out 8.57–9.29.** Single soft chime (E5 additive, reverb 0.3) at 9.29. Sub re-enters at 10.71 (beat 3). |
+| 6 | 11.43–17.14 | 5.71 | **Reveal — the instrument powers on** | **Downbeat.** The key light sweeps the bench left → right. Studio panels rise from below with stagger (80–200 ms): left, a live histogram/scope (canvas); right, a rotary dial (36 hairline ticks, one amber active tick); bottom, a transport strip with four caps labels **GRADE · FRAME · PRICE · SEND**; top-left, mono "tipmi studio · 1.0" (brand name small at 11.6 s). The card moves to the left third. UI is flat, full-bleed, no device. | **Make it here.** (12.00–14.60; dwell 2.6 s) | Panels: masked rise + 94 % → 100 % scale, 700 ms expo-out, no two on the same frame; card dolly 1.5 % toward camera across the shot; rest 15.0–17.14 (nothing new). | **Hit 1 — power-on**: thump (120 → 60 Hz, 300 ms) + pad opens (fc 300 → 1.2 kHz over 600 ms) + sub lands on A1; low hum swell 11.43–12.30. Chord Am9. |
+| 7 | 17.14–20.00 | 2.86 | **Grade it** | A glass touch ring lands on the dial; the dial turns 7 detents clockwise; the card's grade warms in 7 matching steps; the histogram reshapes live; readout "WARMTH +7" in tabular numerals under the dial. | **Grade it.** (17.30–18.70; dwell 1.4 s) | Dial rotation quantized to detents, 120 ms expo-out each (17.50–17.92); card colour matrix stepped in sync; touch ring 300 ms in / 300 ms out. | **Hit 2 — ratchet**: 7 paper ticks in 420 ms (one gesture). Tri layer added one octave up −12 dB. Chord Fmaj9. |
+| 8 | 20.00–22.86 | 2.86 | **Frame it** | Transform: the card slides right into a 3:4 frame; a crop rectangle tightens and *snaps*; beneath it a title is set — "Still, no. 4" in Fraunces, the film's one variable-weight moment (wght 300 → 500, opsz 72 → 144 over 700 ms, left-aligned on a fixed-width block). Readout "3 : 4 · 1200 × 1600". | **Frame it.** (20.20–21.60; dwell 1.4 s) | Crop snap 400 ms quint-out, 1 % overshoot max; title weight tween 20.90–21.60; ruler hairlines draw via stroke-dashoffset. | Crop-snap tick (30 ms, 3 kHz band) at 20.90. Hats 16ths continue. Chord holds. |
+| 9 | 22.86–25.71 | 2.86 | **Price it** | The right panel becomes the drop sheet: toggle **Edition** flips (knob slides, one-frame amber flash); stepper rolls to "25"; price field "40" (no currency glyph); a small line "You keep 90 %". Rest of the UI dims 20 % so the line sits in negative space. | **Price it.** (23.00–24.40; dwell 1.4 s) | Switch 220 ms expo-out at 23.60; stepper digits by masked rise 40 ms stagger; dim ramp 300 ms. | Switch tick at 23.60. Filter fully open. Chord Cmaj9. |
+| 10 | 25.71–28.57 | 2.86 | **Send** (no line — peak tempo) | SEND in the transport strip becomes a long-press: an amber ring fills around it (26.40–27.86). At 27.86 the card lifts off the bench toward the camera and up; the panels drop away below; the bench darkens to black. | — | Ring: SVG stroke-dashoffset, linear with soft ends; card scale 1 → 1.18, y −12 %, 700 ms (100 ms expo-in lead, then quint-out); panels exit 350 ms expo-in with 60 ms stagger. | **Hit 3 — send**: riser (noise LP 400 Hz → 6 kHz, 26.40–27.86) → reversed-air lift 27.86–28.57; sub sidechain dip −6 dB. |
+| 11 | 28.57–31.43 | 2.86 | **Chosen** | **Downbeat, match cut**: the card settles into the top cell of a feed on a phone standing on the bench (rotateY −16°, rotateX 5°, 86 % frame height, bench reflection 22 %); other curated works below; an editorial tag **Selected** with an amber dot slides in under the hero. No like counts, no numbers. The only device shot in the film. | **Chosen, not ranked.** (28.90–30.90; dwell 2.0 s) | Phone push-in 2 %; glare gradient tweened across the glass as the key light passes; tag masked rise 500 ms at 29.40. | **Hit 4 — landing** thump at 28.57 (on the cut). Hats back to 8ths. Chord Am9. Delay tails open (375 ms, fb 0.35). |
+| 12 | 31.43–34.29 | 2.86 | **Supported** | The feed scrolls up one card (another creator's piece appears); a glass tile drops from the top of the screen: "New supporter" / "Mara K." Nothing else moves. | **Your work. Your terms.** (31.70–34.10; dwell 2.4 s) | Feed `translateY` smoothstep 900 ms; tile masked drop 600 ms expo-out at 32.30 (fake glass). | Paper tick at 32.30 (−16 dB under music). Pad stereo width up. Chord Fmaj9 at 34.29. |
+| 13 | 34.29–37.14 | 2.86 | **Back to work** (human beat) | Rack-focus: the phone blurs to 4 px and fades; the bench returns, stripped to its surface, the LED, and a new *blank* tray — a card-shaped rectangle a hair brighter than the bench. The next piece. The creator is implied, never shown. | **Back to work.** (34.50–36.40; dwell 1.9 s) | Blur 0 → 4 px on a flattened phone snapshot (not the 3D node); tray fades up 94 % → 100 %; the longest rest in the film (36.4–37.14). | Strip to pad + sub; LP down to 600 Hz; hats out. Delay repeats darken. |
+| 14 | 37.14–41.00 | 3.86 | **Logo** | The amber LED travels up the frame and becomes the tittle of the first **i** as the wordmark **tipmi** rises from a mask (x = 173, baseline y = 520). At 37.60 (wordmark at 90 % of final position) both i-dots light. Tagline beneath in Fraunces (baseline y = 640); CTA in 22 px caps (y = 700). Nothing else on the card. | **Built for the work.** (38.30–40.70; dwell 2.4 s) · caption: **Now open for creators.** (38.70–41.00; dwell 2.3 s) — the one permitted two-line card | Wordmark masked rise 650 ms expo-out; dots scale 0.94 → 1 + brightness; tagline blur-in 550 ms quint-out (blur 10 px, scale 1.03 → 1); CTA fade 400 ms; 1 % push on the whole card. | Air riser 36.60–37.60 → **Hit 5 — logo** at 37.60: thump (120 → 60 Hz) + chime (E6/A5 additive). Pad release 3 s. |
+| 15 | 41.00–42.00 | 1.00 | **Tail** | Fade to black over 600 ms, hold black. | — | — | Silence; reverb tail gone by 41.2. |
+
+**Checks.** 12 lines, longest 4 words / 22 chars; every dwell ≥ 1.4 s and above the craft-guide table; no two voice lines overlap (end card exception); product visible at 11.43 s; brand name small at 11.6 s, big at 37.1 s; three consecutive negative shots max (2–4); peak tempo at 25.7–28.6 s (61–68 % of runtime, then decelerating); cuts only at 5.71, 7.14, 8.57, 37.14 — everything else is a transform with the card as carrier (≈ 70 % transforms); silence used three times (open, turn, tail).
+
+**Proposed zh swap (draft, ≤ 8 chars each, for the `COPY.zh` set):** 做了几个小时。/ 几秒就被淹没。/ 不在这里。/ 在这里创作。/ 调色。/ 构图。/ 定价。/ 被选中，不被排序。/ 你的作品，你定。/ 回去创作。/ 为作品而造。/ 现向创作者开放。
+
+---
+
+## 4. Music and sound (all synthesized in Node → WAV, 48 kHz)
+
+**Tempo / key**: 84 BPM, A minor (Am9 home), one cue, 42 s. Voicing from the feasibility proof: 3 detuned saws per note (±8 ¢) → one-pole LP ×2, L/R fc ratio 1 : 1.03, slow LFO 0.7 Hz ± 300 Hz on fc; triangle layer one octave up at −12 dB from 17.14; sub = sine at the root, 120 Hz LP, mono, dry; hats = seeded white noise → LP 9 kHz → `exp(−60t)`, L/R alternating; delay 375 ms (dotted 8th ≈ bar/8 at 84 BPM is 357 ms — tie it to BPM: use 357 ms) feedback 0.35 with 3 kHz LP in the loop; Schroeder reverb mix 0.3 on pad and chimes only.
+
+**Structure (aligned to shots)**
+
+| Time | Shots | Arrangement |
+|---|---|---|
+| 0.00–3.57 | 1 | Room tone (LP noise −40 dB) + sub drone A1 −18 dB. Nothing rhythmic. ≥ 1.5 s of near-silence satisfied. |
+| 3.57–8.57 | 2–4 | Hats 8ths (3.57) → 16ths (5.71); sub pulses on bar; pad enters dark (fc 300 Hz) at 5.71; noise riser 200 Hz → 8 kHz, amplitude u², 5.71–8.57; sub pitch drop 55 → 41 Hz 8.20–8.57; hard stop. |
+| 8.57–11.43 | 5 | **Drop-out 0.72 s.** One chime E5 at 9.29 (additive, reverb). Sub re-enters 10.71 at −12 dB. |
+| 11.43–17.14 | 6 | **Downbeat**: thump + pad opens (fc → 1.2 kHz, 600 ms) + sub on A1; chord **Am9**. Hats rest for 2 beats, return on 8ths. |
+| 17.14–28.57 | 7–10 | Feature run: tri layer in; hats 16ths; filter to fully open by 25.71. Chords every 2 bars: **Fmaj9** (17.14) → **Cmaj9** (22.86); build with a second saw voice at 25.71; riser 26.40–27.86 into the lift. |
+| 28.57–34.29 | 11–12 | **Am9** landing (thump on the cut); hats back to 8ths; pad width up; delay tails audible; **Fmaj9** at 34.29. |
+| 34.29–37.14 | 13 | Strip to pad + sub; LP down to 600 Hz; hats out; room gets quiet. |
+| 37.14–41.00 | 14 | Air riser 36.60–37.60 (noise HP sweep, reversed envelope) → **logo hit 37.60**; pad release 3 s; delay repeats darken. |
+| 41.00–42.00 | 15 | Silence (−∞ by 41.2). |
+
+**Five sound-design hits** (all also written to `cues.json`, which the GSAP timeline reads so picture and sound share one grid):
+
+1. **Power-on** 11.43 — sine thump 120 → 60 Hz / 300 ms + low hum swell (sub + tri) 11.43–12.30.
+2. **Ratchet** 17.50–17.92 — 7 paper ticks (noise burst 25 ms through a 2–4 kHz band), one gesture.
+3. **Send** 26.40–28.57 — LP noise riser 400 Hz → 6 kHz (1.46 s) → reversed-air "lift" (noise through rising HP, reverse envelope, 0.7 s) with a −6 dB sidechain dip on the sub.
+4. **Landing** 28.57 — thump + short low tom-like sine (90 Hz, 180 ms), on the cut frame.
+5. **Logo** 37.60 — the single logo sound: thump (120 → 60 Hz, 80 ms pitch env, 300 ms decay) + additive chime at E6/A5 (partials 1, 2.01, 3.0, 4.2, 5.4; decays `exp(−t(2+2j))`); onset on the frame the wordmark reaches 90 % and the i-dots light.
+
+Small UI ticks (3 more, 12–18 dB under music): crop snap 20.90, switch 23.60, tile 32.30. The chime at 9.29 is the turn's accent. Total UI SFX in the feature run: 3 ticks + 2 gestures — within the 3–5 guideline.
+
+**Mix**: aim the raw bus at ≈ −16 LUFS, peaks ≈ −3 dBFS; `loudnorm` two-pass (`linear=true`) to **−14 LUFS integrated, ≤ −1 dBTP**, LRA 7–9 LU; music peaks −6 dBTP; re-measure the muxed MP4. Every hard cut (5.71, 7.14, 8.57, 28.57, 37.14) lands on a beat; transforms start on beats and resolve on the next bar.
+
+---
+
+## 5. Why this beats a generic "social app" ad — and three risks
 
 **Why it wins**
-- **It shows a thing you operate, not a feed you watch.** Dials, detents, readouts and a Publish button that fills with light give the viewer a *physical* satisfaction that no "people laughing at phones" montage can; creators recognise their own tools and read it as respect.
-- **Every claim is evidence, not slogan.** "Chosen, not ranked" is shown as a feed with credits and curation tags and no counters; "Your terms" is a slider landing on a number; "Seen by the right people" is a printed page. No "no algorithm" banner, no crossed-out logos, no metric theatre.
-- **One carrier, one direction, one light.** The same piece of work travels from buried to printed; the film reads as one continuous shot with three cuts, which is what separates it from template motion-graphics.
-- **The constraints are the style.** Generative still-lifes, flow-field prints and typographic posters *are* what a curated art/design feed looks like; the junk wall is pure code noise. Nothing here pretends to be a photograph, so nothing looks like a stock placeholder.
-- **Monetization is shown with dignity** (a price detent, a supporter joining, no dollar rain) — the OnlyFans adjacency reads as patronage, the RedNote adjacency as editorial.
+
+- **It is a point-of-view film, not a product tour.** No hands, no faces, no "diverse friends laughing at a phone" — the viewer is the creator and performs every gesture. That is the only honest way to do "creator-first" without stock.
+- **One object, one take.** The piece is on screen for 37 seconds straight; the UI assembles around it and dissolves away again. A single carrier object is the difference between a film and a template reel, and it dramatizes the brand truth (the work stays; the noise goes).
+- **Tactility you can hear.** Detents, snaps, a long-press ring — every interaction is quantized to a sound. Pro-instrument satisfaction (camera/synth/DAW) is a feeling no incumbent's ad has, and it makes "creator tools" a sensation rather than a claim.
+- **Money shown with dignity.** Price as an edition, payment as a tile with a name; no dollar signs, no counters, no "unlock". The OnlyFans adjacency reads as patronage.
+- **The refrain.** *Make it here / Grade it / Frame it / Price it / Back to work* — a voice, 2–3 words per line, Chinese-swappable, memorable; and *Built for the work* lands on the last gesture of returning to the bench.
+- **Dark done right.** One desaturated amber lamp at < 0.3 % of pixels, lifted blacks, warm bone ink, Fraunces at weight 300 — the Linear/Loewe register, not crypto.
 
 **Risks and mitigations**
-1. **"Dark + accent + UI" slides into crypto/gaming.** → Accent is a desaturated tungsten, never a glow, never on text, ≤ 5 % of frames; bloom only baked into the hero card's own edge-light (< 8 %); blacks lifted; serif at light weight; the paper interlude breaks the dark field once. Checklist §7 of the craft guide is scored at review: ship only at ≥ 13.
-2. **The feature run becomes a product demo** (too many strings, too fast, too clever). → Exactly three tool beats + one price beat, one interaction each, ≤ 3 UI strings per shot, no feature names beyond the mode strip, every control holds its last 20 %; if the review contact sheet shows a frame that reads as a UI kit, that control is deleted, not polished.
-3. **Generative cards read as gradient wallpaper / the junk wall reads as a parody.** → All library cards pass through one palette function with a shared black point and an edge-light; 45 % of the feed is typographic/flow-field work with real titles and credits so it reads as a design-school annual, not a Dribbble shot; the junk tiles use no platform chrome (no icons, no logos, no familiar layouts) — only blockiness, clipped colour and duration chips, i.e. a *category* of bad video.
 
-**Production notes for the Opus pass (determinism):** the hero card's per-frame regrade (shots 8–10) and the readouts must be pure functions of `t` (`warmth(t)`, `exposure(t)`, `crop(t)`, `price(t)` via `smoothstep` segments), rendered at 105×140 and upscaled; the junk-wall flicker uses `hash(floor(t·24))`; scenes toggle via `display:none` `set()` calls; JPEG q95 frames; verify a 30-frame range twice with different `--workers` and `cmp`. All strings in `COPY = {en, zh}`, `BRAND_NAME` as one constant, mark as one SVG component.
+| Risk | Mitigation |
+|---|---|
+| **Dark field + amber glow drifts into "crypto / gaming"** (saturated accent, heavy bloom, bold type). | Accent fixed at `#D8A04A` (sat ≈ 60 %), bloom baked low (< 8 %) and only from the lamp and ring; no glow on text ever; display weight 300; content world stays clay/bone/slate; review each frame against checklist item 9/10; if the amber reads "gold", fall back to muted coral `#C97A66`. |
+| **It becomes a feature demo** (the studio panels invite over-explaining; four labels in the transport strip). | Hard cap of three tool verbs, one gesture each, ≤ 1.4 s of copy per beat; the UI never animates for its own sake — if a panel does not take part in the gesture it stays dim at Ink 3; the strip labels exist only so SEND can be the long-press. Cut Frame it first if the run runs long. |
+| **No person on screen → cold; "Not here." could read as ambiguous** (not here = where?). | First-person refrain, the touch ring, and the *Back to work* beat put the human in by implication; test *Not here.* against the alt *Not anymore.* in the first review render; keep both in `COPY`. |
+| (Secondary) **UI strings make product claims** ("You keep 90 %", edition/price values) we have not confirmed. | All are constants (`SPLIT`, `EDITION`, `PRICE`, `SUPPORTER_NAME`) rendered from one file; `SPLIT` can be blanked to hide the line without re-timing the shot. |
+
+---
+
+## 6. Build notes (for the production pass)
+
+- `DURATION = 42`, 30 fps, `seek(t)` pure in `t`; grain tile index `floor(t*24) % 8`; all scene toggles via `display:none` sets on the master timeline; `fromTo` only; PRNG consumed in `buildAssets()` only (card library of 24, dissolve keyframes, scope data per grade step, name list).
+- Carrier card is one DOM element whose parent changes by *re-targeting transforms*, not by re-parenting (keeps the match cuts pixel-exact): position/size keyframes at 0, 3.57, 5.71, 9.29, 11.43, 20.00, 25.71, 27.86, 28.57 are authored as absolute `fromTo` tweens.
+- Phone (shot 11–13) is the one `preserve-3d` subtree; the rack-focus in shot 13 blurs a 2D snapshot of it drawn to canvas at `READY`, not the live 3D node.
+- `constants.js`: `BRAND_NAME`, `TAGLINE`, `CTA`, `SPLIT`, `EDITION`, `PRICE`, `SUPPORTER_NAME`, `ACCENT`; `copy.js`: `COPY = {en, zh}` incl. UI strings; `cues.json`: `{bpm:84, beats:[...], hits:{poweron:11.43, ratchet:17.50, send:26.40, lift:27.86, landing:28.57, logo:37.60}, chime:9.29, dropout:[8.57,9.29], ticks:[20.90,23.60,32.30]}`.
+- Frames as JPEG q95; x264 `-crf 16 -preset slow -tune film -pix_fmt yuv420p`; determinism check on frames 300–330 with 1 vs 4 workers.

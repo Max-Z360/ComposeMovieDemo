@@ -28,7 +28,7 @@ promo-video/
 
 | name | meaning |
 |---|---|
-| `DURATION` | total seconds (number) |
+| `DURATION` | total seconds (number) — 42.5 for this film (picture 0–42.0, black 42.0–42.5), from `src/cues.js` |
 | `READY` | Promise resolved after `document.fonts.ready` and after the timeline is built |
 | `seek(t)` | synchronously puts the page in the exact state for time `t`: `tl.seek(t, false)` on the paused GSAP master timeline **and** redraws every canvas from `t` |
 
