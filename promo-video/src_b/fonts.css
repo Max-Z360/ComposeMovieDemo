@@ -1,0 +1,24 @@
+/* Local Google Fonts (OFL). Variable axes: wght (and opsz where present). */
+@font-face{font-family:"Inter";src:url("../fonts/Inter-Variable.ttf") format("truetype");font-weight:100 900;font-style:normal}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-Italic-Variable.ttf") format("truetype");font-weight:100 900;font-style:italic}
+@font-face{font-family:"Playfair Display";src:url("../fonts/PlayfairDisplay-Variable.ttf") format("truetype");font-weight:400 900;font-style:normal}
+@font-face{font-family:"Playfair Display";src:url("../fonts/PlayfairDisplay-Italic-Variable.ttf") format("truetype");font-weight:400 900;font-style:italic}
+@font-face{font-family:"Fraunces";src:url("../fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900;font-style:normal}
+@font-face{font-family:"Fraunces";src:url("../fonts/Fraunces-Italic-Variable.ttf") format("truetype");font-weight:100 900;font-style:italic}
+@font-face{font-family:"Instrument Serif";src:url("../fonts/InstrumentSerif-Regular.ttf") format("truetype");font-weight:400;font-style:normal}
+@font-face{font-family:"Instrument Serif";src:url("../fonts/InstrumentSerif-Italic.ttf") format("truetype");font-weight:400;font-style:italic}
+@font-face{font-family:"DM Sans";src:url("../fonts/DMSans-Variable.ttf") format("truetype");font-weight:100 1000;font-style:normal}
+@font-face{font-family:"DM Serif Display";src:url("../fonts/DMSerifDisplay-Regular.ttf") format("truetype");font-weight:400;font-style:normal}
+@font-face{font-family:"DM Serif Display";src:url("../fonts/DMSerifDisplay-Italic.ttf") format("truetype");font-weight:400;font-style:italic}
+@font-face{font-family:"Space Grotesk";src:url("../fonts/SpaceGrotesk-Variable.ttf") format("truetype");font-weight:300 700;font-style:normal}
+@font-face{font-family:"Manrope";src:url("../fonts/Manrope-Variable.ttf") format("truetype");font-weight:200 800;font-style:normal}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-Variable.ttf") format("truetype");font-weight:100 800;font-style:normal}
+@font-face{font-family:"Geist";src:url("../fonts/Geist-Variable.ttf") format("truetype");font-weight:100 900;font-style:normal}
+@font-face{font-family:"Geist Mono";src:url("../fonts/GeistMono-Variable.ttf") format("truetype");font-weight:100 900;font-style:normal}
+@font-face{font-family:"Syne";src:url("../fonts/Syne-Variable.ttf") format("truetype");font-weight:400 800;font-style:normal}
+@font-face{font-family:"Bricolage Grotesque";src:url("../fonts/BricolageGrotesque-Variable.ttf") format("truetype");font-weight:200 800;font-style:normal}
+@font-face{font-family:"Cormorant Garamond";src:url("../fonts/CormorantGaramond-Variable.ttf") format("truetype");font-weight:300 700;font-style:normal}
+@font-face{font-family:"Cormorant Garamond";src:url("../fonts/CormorantGaramond-Italic-Variable.ttf") format("truetype");font-weight:300 700;font-style:italic}
+@font-face{font-family:"Newsreader";src:url("../fonts/Newsreader-Variable.ttf") format("truetype");font-weight:200 800;font-style:normal}
+@font-face{font-family:"Newsreader";src:url("../fonts/Newsreader-Italic-Variable.ttf") format("truetype");font-weight:200 800;font-style:italic}
+@font-face{font-family:"Noto Sans SC";src:url("../fonts/NotoSansSC-Variable.ttf") format("truetype");font-weight:100 900;font-style:normal}

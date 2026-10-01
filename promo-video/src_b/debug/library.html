@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>library contact sheet</title>
+<link rel="stylesheet" href="../fonts.css">
+<style>
+body{margin:0;background:#F4F1EB;font:500 13px "Inter";color:#3A3835;width:1920px}
+#grid{display:flex;flex-wrap:wrap;gap:28px 24px;padding:32px 40px;align-items:flex-end}
+.cell{display:flex;flex-direction:column;gap:8px}
+.mat{background:#EAE6DE;border:1px solid #C9C4BA;padding:10px;box-shadow:0 2px 4px rgba(20,19,17,.08),0 18px 36px rgba(20,19,17,.12)}
+.mat canvas{display:block;height:260px;width:auto}
+.row{display:flex;gap:6px;padding:12px 40px;flex-wrap:wrap;background:#0C0B0A}
+.row canvas{height:155px;width:auto;display:block}
+.row2{display:flex;gap:6px;padding:12px 40px;flex-wrap:wrap}
+.row2 canvas{height:200px;width:auto;display:block}
+h3{margin:12px 40px 0;font:600 14px "Inter"}
+</style></head>
+<body>
+<h3 id="info">library</h3>
+<div id="grid"></div>
+<h3>wall thumbs (dim)</h3><div class="row" id="thumbs"></div>
+<h3>hero dissolve (16) on ink</h3><div class="row" id="diss"></div>
+<h3>hero warmth +0..+7</h3><div class="row2" id="warm"></div>
+<script src="../constants.js"></script>
+<script src="../gen/util.js"></script>
+<script src="../gen/stilllife.js"></script>
+<script src="../gen/cards.js"></script>
+<script>
+window.READY = (async () => {
+  await Promise.all(['400 20px Inter', '500 14px Inter', 'italic 400 300px Fraunces', '400 84px Fraunces'].map((f) => document.fonts.load(f)));
+  const lib = TB.buildLibrary(SEED + 1);
+  document.getElementById('info').textContent = 'library build ' + JSON.stringify(lib.times);
+  const grid = document.getElementById('grid');
+  lib.plates.forEach((p) => {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const mat = document.createElement('div'); mat.className = 'mat'; mat.appendChild(p.canvas);
+    const cap = document.createElement('div'); cap.textContent = p.i + ' · ' + p.caption + (p.pale ? ' (pale)' : '');
+    cell.appendChild(mat); cell.appendChild(cap); grid.appendChild(cell);
+  });
+  lib.thumbs.forEach((c) => document.getElementById('thumbs').appendChild(c));
+  document.getElementById('thumbs').appendChild(lib.heroCell);
+  lib.dissolve.forEach((c) => { const s = TB.makeCanvas(116, 155); s.getContext('2d').drawImage(c, 0, 0, 116, 155); document.getElementById('diss').appendChild(s); });
+  lib.warmth.forEach((c) => { const s = TB.makeCanvas(150, 200); s.getContext('2d').drawImage(c, 0, 0, 150, 200); document.getElementById('warm').appendChild(s); });
+  console.log('times', JSON.stringify(lib.times));
+})();
+</script></body></html>

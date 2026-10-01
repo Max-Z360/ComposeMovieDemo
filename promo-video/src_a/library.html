@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>library contact sheet</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+html,body{margin:0;background:#F4F1EB;font:500 13px "Inter";color:#3A3835}
+#g{display:grid;grid-template-columns:repeat(6,300px);gap:28px 24px;padding:24px}
+.c{display:flex;flex-direction:column;gap:6px}
+.m{background:#EAE6DE;border:1px solid #C9C4BA;padding:10px;display:flex;align-items:center;justify-content:center;height:300px}
+.m canvas{max-width:280px;max-height:280px;display:block}
+#th{display:flex;gap:8px;padding:0 24px 24px;background:#0C0B0A;padding-top:16px}
+#th canvas{width:116px;height:155px;image-rendering:auto}
+</style></head><body>
+<div id="g"></div><div id="th"></div>
+<script src="constants.js"></script>
+<script src="gen/prng.js"></script>
+<script src="gen/cards.js"></script>
+<script>
+window.READY=(async()=>{
+  await Promise.all(['italic 400 320px Fraunces','500 14px Inter','500 13px Inter'].map(f=>document.fonts.load(f)));
+  const q=new URLSearchParams(location.search); const reseed=JSON.parse(q.get('reseed')||'{}');
+  const L=Cards.buildLibrary(SEED,{reseed,noDissolve:true});
+  const g=document.getElementById('g');
+  L.plates.forEach((p,i)=>{const d=document.createElement('div');d.className='c';const m=document.createElement('div');m.className='m';m.appendChild(p.canvas);d.appendChild(m);const c=document.createElement('div');c.textContent=i+' '+p.style+' '+p.fmt+' — '+p.caption;d.appendChild(c);g.appendChild(d)});
+  const th=document.getElementById('th'); L.thumbs.forEach(t=>th.appendChild(t));
+})();
+</script></body></html>
