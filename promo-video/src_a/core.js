@@ -75,7 +75,7 @@ function makePlate(parent, srcCanvas, opts = {}) {
   const el = h("div", "plate", parent);
   const cv = h("canvas", "pc", el);
   cv.width = srcCanvas ? srcCanvas.width : 540; cv.height = srcCanvas ? srcCanvas.height : 720;
-  if (srcCanvas) cv.getContext("2d").drawImage(srcCanvas, 0, 0);
+  if (srcCanvas) cv.getContext("2d", { willReadFrequently: true }).drawImage(srcCanvas, 0, 0);
   const dim = h("div", "dim", el);
   const edge = h("div", "edge", el);
   return { el, cv, dim, edge, last: {} };
@@ -129,5 +129,6 @@ function renderDot(el, cx, cy, d, op = 1, last = el._last || (el._last = {})) {
   if (last.tr !== tr) { last.tr = tr; el.style.transform = tr; }
   const o = fmt(op); if (last.op !== o) { last.op = o; el.style.opacity = o; }
 }
+const plateShadow = a => a <= 0 ? "none" : `0 2px 4px rgba(20,19,17,${fmt(0.08 * a)}), 0 24px 48px rgba(20,19,17,${fmt(0.14 * a)})`;
 function rectLerp(a, b, u) { return { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), w: lerp(a.w, b.w, u), h: lerp(a.h, b.h, u) }; }
 function scaleRect(r, s, cx, cy) { return { x: cx + (r.x - cx) * s, y: cy + (r.y - cy) * s, w: r.w * s, h: r.h * s }; }

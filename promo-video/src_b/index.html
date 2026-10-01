@@ -11,7 +11,7 @@
   <div id="type" class="layer"></div>
   <div id="bandOv" class="abs"></div>
   <div id="vignette" class="layer"></div>
-  <canvas id="grain" class="full" width="1920" height="1080"></canvas>
+  <canvas id="grain" width="960" height="540"></canvas>
   <div id="black" class="layer" style="display:none"></div>
 </div>
 <script src="../node_modules/gsap/dist/gsap.min.js"></script>
@@ -53,6 +53,7 @@
   const vig = document.getElementById('vignette');
   const bandOv = document.getElementById('bandOv');
   const black = document.getElementById('black');
+  const world = document.getElementById('world');
   const INK_END = CUES.shots.turn[0];          // 8.571 hard cut ink -> paper
   const FREEZE = CUES.mute[0];                 // 7.857
   const PIC_END = CUES.pictureEnd;             // 42.0
@@ -71,8 +72,8 @@
     const B = TB.band(t);
     if (!ink && B.a > 0.001) {
       bandOv.style.display = 'block';
-      bandOv.style.opacity = (0.2 * B.a).toFixed(4);
-      bandOv.style.transform = `translate(${(B.x - 420).toFixed(1)}px, -260px) rotate(-8deg)`;
+      bandOv.style.opacity = (0.075 * B.a).toFixed(4);
+      bandOv.style.transform = `translateX(${(B.x - 550).toFixed(1)}px)`;
     } else bandOv.style.display = 'none';
     // film grade overlays
     vig.className = 'layer ' + (ink ? 'vig-ink' : 'vig-paper');

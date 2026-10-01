@@ -26,7 +26,7 @@ h3{margin:12px 40px 0;font:600 14px "Inter"}
 <script>
 window.READY = (async () => {
   await Promise.all(['400 20px Inter', '500 14px Inter', 'italic 400 300px Fraunces', '400 84px Fraunces'].map((f) => document.fonts.load(f)));
-  const lib = TB.buildLibrary(SEED + 1);
+  const lib = TB.buildLibrary(SEED + 1, true);
   document.getElementById('info').textContent = 'library build ' + JSON.stringify(lib.times);
   const grid = document.getElementById('grid');
   lib.plates.forEach((p) => {

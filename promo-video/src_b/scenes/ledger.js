@@ -18,7 +18,7 @@
         const y = 466 + 56 * k;
         const mask = document.createElement('div');
         mask.style.cssText = `position:absolute;left:173px;top:${y - 2}px;overflow:hidden;padding:2px 0 6px`;
-        const words = txt.split(/(?<= )/).map((w) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = w; s.style.cssText = 'display:inline-block;white-space:pre'; return s; });
+        const words = txt.split(/(?<= )/).map((w) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = w; s.style.cssText = 'display:inline-block;white-space:pre;position:relative'; return s; });
         const cap = document.createElement('div'); cap.className = 'cap'; cap.style.position = 'relative';
         words.forEach((w) => cap.appendChild(w));
         mask.appendChild(cap); host.appendChild(mask);
@@ -45,7 +45,7 @@
       Lg.host.style.opacity = (1 - (P.out || 0)).toFixed(4);
       Lg.rule.style.transform = `scaleX(${(P.rule || 0).toFixed(4)})`;
       for (const r of Lg.rows) {
-        for (const w of r.words) w.el.style.transform = `translateY(${((1 - (w.p.v || 0)) * 125).toFixed(2)}%)`;
+        for (const w of r.words) w.el.style.top = `${((1 - (w.p.v || 0)) * 33).toFixed(3)}px`;
         if (r.sep) r.sep.style.transform = `scaleX(${(r.p.sep || 0).toFixed(4)})`;
       }
     },

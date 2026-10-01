@@ -40,13 +40,19 @@
           parts.forEach((p) => {
             const w = document.createElement('span');
             w.className = 'w'; w.textContent = p;
-            if (mode === 'blur') w.style.transform = 'none';
+            if (mode === 'blur') w.style.top = '0';
             mask.appendChild(w); words.push({ el: w });
           });
           el.appendChild(mask);
         });
         host.appendChild(el);
         const L = { el, words, tIn, tOut, mode, exitDur, p: { out: 0 } };
+        if (mode === 'blur') {
+          // the blur-in runs on a clone; the resting line is a never-filtered, never-transformed element
+          // (an element that has been scaled/filtered keeps a stale-scale raster: softer text, history-dependent)
+          L.clone = el.cloneNode(true); L.clone.id = id + '_in';
+          host.appendChild(L.clone);
+        }
         if (mode === 'rise') {
           words.forEach((w, i) => { w.p = { v: 0 }; TB.tw(tl, w.p, 'v', 0, 1, tIn + i * 0.055, 0.6, E.expoOut); });
         } else {
@@ -61,20 +67,32 @@
       for (const L of S.lines) {
         const on = t >= L.tIn - 1e-6 && t < L.tOut;
         L.el.style.display = on ? 'block' : 'none';
+        if (L.clone && !on) L.clone.style.display = 'none';
         if (!on) continue;
         const o = L.p.out;
         if (L.mode === 'rise') {
-          for (const w of L.words) w.el.style.transform = `translateY(${((1 - w.p.v) * 1.3).toFixed(4)}em)`;
+          // motion through layout offsets, not transforms: transformed text gets a history-dependent raster translation
+          for (const w of L.words) w.el.style.top = `${((1 - w.p.v) * 1.3).toFixed(4)}em`;
           L.el.style.opacity = (1 - o).toFixed(4);
-          L.el.style.transform = `translateY(${(-6 * o).toFixed(2)}px)`;
+          L.el.style.top = `${(212 - 6 * o).toFixed(3)}px`;
           L.el.style.filter = '';
         } else {
           const v = L.p.inn;
-          const blur = 10 * (1 - v);
-          L.el.style.opacity = (v * (1 - o)).toFixed(4);
-          L.el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '';
-          L.el.style.transformOrigin = '0 50%';
-          L.el.style.transform = `translateY(${(-6 * o).toFixed(2)}px) scale(${(1.03 - 0.03 * v).toFixed(4)})`;
+          const entering = v < 0.9999;
+          const C = L.clone;
+          C.style.display = entering ? 'block' : 'none';
+          L.el.style.display = entering ? 'none' : 'block';
+          if (entering) {
+            // scale 1.03 -> 1 through font-size (layout; tracking is in em), centred on the block; blur via filter only
+            const sc = 1.03 - 0.03 * v, n = L.el.children.length;
+            C.style.opacity = v.toFixed(4);
+            C.style.filter = `blur(${(10 * (1 - v)).toFixed(2)}px)`;
+            C.style.fontSize = (84 * sc).toFixed(3) + 'px';
+            C.style.top = (212 - (84 * n * (sc - 1)) / 2).toFixed(3) + 'px';
+          } else {
+            L.el.style.opacity = (1 - o).toFixed(4);
+            L.el.style.top = `${(212 - 6 * o).toFixed(3)}px`;
+          }
         }
       }
     },

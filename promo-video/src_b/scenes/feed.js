@@ -38,6 +38,24 @@
   TB.FEED_HERO_HANDOFF = colRect(0, 25.143);
   TB.FEED = { colRect, scroll, SCR };
 
+  // the bezel ring as a bitmap: outer rounded rect (434×910, r64) minus inner (inset w, r 64−w); warm 1 px edge highlight
+  function drawBezel(c, w, hl) {
+    const ctx = c.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.translate(5, 5);
+    ctx.beginPath();
+    TB.rrectPath(ctx, 0, 0, 434, 910, 64);
+    TB.rrectPath(ctx, w, w, 434 - 2 * w, 910 - 2 * w, Math.max(0, 64 - w));
+    ctx.fillStyle = '#1A1917';
+    ctx.fill('evenodd');
+    if (hl > 0) {
+      ctx.beginPath(); TB.rrectPath(ctx, 1.5, 1.5, 431, 907, 62.5);
+      ctx.strokeStyle = `rgba(250,247,241,${(0.14 * hl).toFixed(3)})`; ctx.lineWidth = 1; ctx.stroke();
+    }
+    c.lastW = w;
+  }
+
   const wallPush = (t) => 1 + 0.01 * prog(t, 17.943, 2.057);
 
   TB.sceneFeed = {
@@ -70,7 +88,7 @@
 
       // header inside the screen
       const hdr = document.createElement('div'); hdr.className = 'hdr';
-      hdr.style.cssText = `left:${SCR.x}px;top:${SCR.y}px;width:${SCR.w}px;height:${HDR}px;`;
+      hdr.style.cssText = `left:${SCR.x}px;top:${SCR.y}px;width:${SCR.w}px;height:${HDR}px;border-radius:${SCR.r}px ${SCR.r}px 0 0;`;
       hdr.innerHTML =
         `<div class="status"><span style="position:absolute;left:30px" class="tnum"></span>` +
         `<svg style="position:absolute;right:26px;top:17px" width="62" height="12" viewBox="0 0 62 12" fill="none" stroke="#6E6A63" stroke-width="1">` +
@@ -85,19 +103,22 @@
       const glare = document.createElement('div');
       glare.style.cssText = `position:absolute;left:${SCR.x}px;top:${SCR.y}px;width:${SCR.w}px;height:${SCR.h}px;border-radius:${SCR.r}px;` +
         'background:linear-gradient(115deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.16) 46%, rgba(255,255,255,0) 62%);background-size:300% 100%;background-repeat:no-repeat';
-      // bezel: one rounded-rect path on the ring's mid-line, drawn then thickened to 12 px (fills the ring exactly)
+      // bezel, phase 1 (21.429–21.929): a 1 px ink line DRAWS clockwise along the phone's outer edge (SVG dash)
       const svgNS = 'http://www.w3.org/2000/svg';
       const bez = document.createElementNS(svgNS, 'svg');
       bez.setAttribute('width', 1920); bez.setAttribute('height', 1080); bez.style.cssText = 'position:absolute;left:0;top:0';
       const ring = document.createElementNS(svgNS, 'rect');
-      const RX = 969, RY = 91, RW = 422, RH = 898, RR = 58;
-      Object.entries({ x: RX, y: RY, width: RW, height: RH, rx: RR, ry: RR, fill: 'none', stroke: '#1A1917' }).forEach(([k, v]) => ring.setAttribute(k, v));
-      const edge = document.createElementNS(svgNS, 'rect');
-      Object.entries({ x: 963.5, y: 85.5, width: 433, height: 909, rx: 63.5, ry: 63.5, fill: 'none', stroke: 'rgba(250,247,241,.14)', 'stroke-width': 1 }).forEach(([k, v]) => edge.setAttribute(k, v));
-      const inner = document.createElementNS(svgNS, 'rect');
-      Object.entries({ x: 975.5, y: 97.5, width: 409, height: 885, rx: 51.5, ry: 51.5, fill: 'none', stroke: 'rgba(250,247,241,.10)', 'stroke-width': 1 }).forEach(([k, v]) => inner.setAttribute(k, v));
-      bez.appendChild(ring); bez.appendChild(edge); bez.appendChild(inner);
+      const RX = 963.5, RY = 85.5, RW = 433, RH = 909, RR = 63.5;
+      Object.entries({ x: RX, y: RY, width: RW, height: RH, rx: RR, ry: RR, fill: 'none', stroke: '#1A1917', 'stroke-width': 1 }).forEach(([k, v]) => ring.setAttribute(k, v));
+      bez.appendChild(ring);
       const per = 2 * (RW + RH) - 8 * RR + 2 * Math.PI * RR;
+      // phase 2 (21.929–22.6): the same line, now a CSS border on the identical rounded rect, thickens inward to the
+      // 12 px bezel (inner radius 64 − 12 = 52 = the screen). CSS rrect borders raster deterministically under the 3D
+      // dolly; SVG path corners do not (Skia path AA depends on partial-raster history).
+      const bezDiv = TB.makeCanvas(444, 920);
+      bezDiv.style.cssText = 'position:absolute;left:958px;top:80px;width:444px;height:920px';
+      bezDiv.lastW = -1;
+      const hl = null;
 
       // ---------- plates (7 wall works + the hero's phone copy)
       const mk = (libId, canvasSrc) => {
@@ -132,8 +153,8 @@
         TB.tw(tl, it.p, 'fly', 0, 1, CUES.shots.column[0] + 0.04 * k, 0.7, E.expoOut);
       });
       screen.appendChild(hdr); screen.appendChild(glare);
-      device.appendChild(bez);
-      TB.tw(tl, P, 'clip', 0, 1, CUES.shots.column[0], 0.7, E.expoOut);
+      device.appendChild(bez); device.appendChild(bezDiv);
+      TB.tw(tl, P, 'clip', 0, 1, CUES.shots.column[0] + 0.15, 0.85, E.camera);
       TB.tw(tl, P, 'hdr', 0, 1, 20.3, 0.4, E.sineInOut);
       TB.tw(tl, P, 'draw', 0, 1, 21.429, 0.5, E.camera);
       TB.tw(tl, P, 'thick', 0, 1, 21.929, 0.671, E.expoOut);
@@ -143,7 +164,7 @@
       TB.tw(tl, P, 'tapDn', 0, 1, TAP, 0.06, E.quintOut);
       TB.tw(tl, P, 'tapUp', 0, 1, TAP + 0.06, 0.06, E.quintOut);
       TB.tw(tl, P, 'chrome', 0, 1, 25.0, 0.4, E.sineInOut);
-      Object.assign(S, { feed: { top, wallRule, ao, pshadow, device, screen, hdr, glare, bez, ring, edge, inner, per, items } });
+      Object.assign(S, { feed: { top, wallRule, ao, pshadow, device, screen, hdr, glare, bez, ring, bezDiv, per, items } });
     },
     update(t, S) {
       const F = S.feed, P = S.feedP;
@@ -157,7 +178,9 @@
       F.wallRule.style.opacity = (1 - (P.topOut || 0)).toFixed(4);
 
       const on = t >= CUES.shots.wall[0] && t < 25.4;
-      F.device.style.display = on ? 'block' : 'none';
+      // the device stays a permanent composited layer (raster scale locked at 1 from page load, see styles.css):
+      // display:none would recreate it with a history-dependent raster scale once the 3D dolly starts
+      F.device.style.visibility = on ? 'visible' : 'hidden';
       const phoneOn = t >= 21.429 && t < 25.4;
       F.ao.style.display = F.pshadow.style.display = phoneOn && (P.shadow || 0) > 0 ? 'block' : 'none';
       if (!on) return;
@@ -165,26 +188,38 @@
       // screen clip: full stage -> screen rect (20.0–20.7)
       const c = P.clip || 0;
       if (t < 20.0) F.screen.style.clipPath = 'none';
-      else F.screen.style.clipPath = `inset(${(SCR.y * c).toFixed(2)}px ${((1920 - SCR.x - SCR.w) * c).toFixed(2)}px ${((1080 - SCR.y - SCR.h) * c).toFixed(2)}px ${(SCR.x * c).toFixed(2)}px round ${(SCR.r * c).toFixed(2)}px)`;
+      else if (t < 22.6) F.screen.style.clipPath = `inset(${(SCR.y * c).toFixed(2)}px ${((1920 - SCR.x - SCR.w) * c).toFixed(2)}px ${((1080 - SCR.y - SCR.h) * c).toFixed(2)}px ${(SCR.x * c).toFixed(2)}px round ${(SCR.r * c).toFixed(2)}px)`;
+      // once the 12 px bezel is solid it covers the corner wedges: a plain rectangular clip avoids the compositor's
+      // rounded-corner mask, whose anti-aliasing under the 3D dolly depends on raster history (non-deterministic)
+      else F.screen.style.clipPath = `inset(${SCR.y}px ${1920 - SCR.x - SCR.w}px ${1080 - SCR.y - SCR.h}px ${SCR.x}px)`;
       // header
       const hv = (P.hdr || 0) * chrome;
       F.hdr.style.display = hv > 0 ? 'block' : 'none';
       F.hdr.style.opacity = hv.toFixed(4);
-      // bezel
-      const dv = P.draw || 0;
-      F.bez.style.display = dv > 0 ? 'block' : 'none';
+      // bezel: SVG draw phase, then the CSS border thickens
+      const dv = P.draw || 0, th = P.thick || 0;
+      const svgPhase = dv > 0 && t < 21.929;
+      F.bez.style.display = svgPhase ? 'block' : 'none';
       F.ring.setAttribute('stroke-dasharray', `${F.per} ${F.per}`);
       F.ring.setAttribute('stroke-dashoffset', (F.per * (1 - dv)).toFixed(2));
-      F.ring.setAttribute('stroke-width', (1 + 11 * (P.thick || 0)).toFixed(3));
-      F.ring.style.opacity = chrome.toFixed(4);
-      F.edge.style.opacity = F.inner.style.opacity = ((P.thick || 0) * chrome).toFixed(4);
+      F.bezDiv.style.display = t >= 21.929 && chrome > 0 ? 'block' : 'none';
+      const bw = Math.round((1 + 11 * th) * 100) / 100;
+      if (bw !== F.bezDiv.lastW) drawBezel(F.bezDiv, bw, th);
+      F.bezDiv.style.opacity = chrome.toFixed(4);
+      // full repaint of the device layer every frame (frame-parity toggle of an invisible background): no partial
+      // raster reuse, so a frame is identical whether a worker arrives here sequentially or by a jump
+      F.device.style.backgroundImage = (Math.round(t * 30) % 2) ? 'linear-gradient(transparent, transparent)' : 'none';
       const sv = (P.shadow || 0) * chrome;
       F.ao.style.opacity = (sv * 0.9).toFixed(4); F.pshadow.style.opacity = sv.toFixed(4);
       // device dolly (max 7° / 3°) and return to flat before the re-target
       const rk = (P.rotIn || 0) * (1 - (P.rotOut || 0));
       const push = 1 + 0.03 * rk;
-      F.device.style.transform = rk > 1e-5 ? `perspective(1800px) rotateY(${(-7 * rk).toFixed(4)}deg) rotateX(${(3 * rk).toFixed(4)}deg) scale(${push.toFixed(5)})` : 'none';
-      F.pshadow.style.transform = `translateX(${(10 * rk).toFixed(2)}px) scale(${push.toFixed(5)})`;
+      // always the same 3D form (identity when idle): the layer is created once at load with raster scale 1 and never re-decided
+      F.device.style.transform = `perspective(1800px) rotateY(${(-7 * rk).toFixed(4)}deg) rotateX(${(3 * rk).toFixed(4)}deg) scale(${push.toFixed(5)})`;
+      // layout, not transform (transformed boxes keep a history-dependent raster translation)
+      { const w = 434 * push, h = 910 * push, ps = F.pshadow.style;
+        ps.left = (1180 - w / 2 + 10 * rk).toFixed(3) + 'px'; ps.top = (540 - h / 2).toFixed(3) + 'px';
+        ps.width = w.toFixed(3) + 'px'; ps.height = h.toFixed(3) + 'px'; ps.borderRadius = (64 * push).toFixed(3) + 'px'; }
       F.glare.style.display = t >= CUES.hits.device && chrome > 0 ? 'block' : 'none';
       F.glare.style.backgroundPosition = `${(100 - 70 * rk - 20 * prog(t, 22.857, 2.2)).toFixed(2)}% 0`;
       F.glare.style.opacity = (Math.min(1, rk * 2) * chrome).toFixed(4);
@@ -217,13 +252,13 @@
         const cs = it.cv.style;
         cs.left = (r.m - 1) + 'px'; cs.top = (r.m - 1) + 'px'; cs.width = r.w + 'px'; cs.height = r.h + 'px';
         const capTop = my + mh + lerp(16, 10, r.di);
-        it.cap.style.left = (mx + 22 * r.di) + 'px'; it.cap.style.top = capTop + 'px'; it.cap.style.fontSize = r.fs.toFixed(3) + 'px';
+        it.cap.style.left = (mx + 22 * r.di) + 'px'; it.cap.style.top = capTop + 'px'; it.cap.style.fontSize = Math.round(r.fs) + 'px';
         const dv2 = p.dot || 0;
         const ds = it.dot.style;
         ds.display = dv2 > 0 ? 'block' : 'none';
         const dcx = mx + lerp(-15 - r.d / 2, 7, r.di), dcy = capTop + lerp(15, 14.5, r.di);
-        ds.width = ds.height = r.d + 'px'; ds.left = (dcx - r.d / 2) + 'px'; ds.top = (dcy - r.d / 2) + 'px';
-        ds.transform = `scale(${(0.94 + 0.06 * dv2).toFixed(4)})`;
+        const dd = r.d * (0.94 + 0.06 * dv2);
+        ds.width = ds.height = dd.toFixed(3) + 'px'; ds.left = (dcx - dd / 2).toFixed(3) + 'px'; ds.top = (dcy - dd / 2).toFixed(3) + 'px';
       }
     },
   };

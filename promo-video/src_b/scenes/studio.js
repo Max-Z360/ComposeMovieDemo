@@ -5,43 +5,50 @@
   const { E, prog } = TB;
   // detent frames from the brief's acceptance check #14 (26.429 + k·0.060 s, ±0 frames)
   const DETENT_F = [793, 795, 797, 798, 800, 802, 804];
+  // pure: number of detents passed at time t (also the hero's warmth grade index)
+  TB.detents = function (t) {
+    const f = t * 30;
+    let k = 0, last = -1;
+    for (let i = 0; i < DETENT_F.length; i++) if (f >= DETENT_F[i] - 1e-6) { k = i + 1; last = DETENT_F[i]; }
+    return { k, last };
+  };
+
+  function drawDial(c, ang, k) {
+    const ctx = c.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 180, 180); ctx.translate(90, 90);
+    ctx.lineCap = 'butt';
+    for (let i = 0; i < 24; i++) {
+      const a = (i * 15 * Math.PI) / 180;
+      ctx.beginPath(); ctx.moveTo(Math.cos(a) * 70, Math.sin(a) * 70); ctx.lineTo(Math.cos(a) * 79, Math.sin(a) * 79);
+      ctx.strokeStyle = '#C9C4BA'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, 56, 0, Math.PI * 2); ctx.strokeStyle = '#C9C4BA'; ctx.lineWidth = 1; ctx.stroke();
+    const ai = (((Math.round((-90 + 15 * k) / 15) % 24) + 24) % 24), aa = (ai * 15 * Math.PI) / 180;
+    ctx.beginPath(); ctx.moveTo(Math.cos(aa) * 66, Math.sin(aa) * 66); ctx.lineTo(Math.cos(aa) * 80, Math.sin(aa) * 80);
+    ctx.strokeStyle = ACCENT; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
+    const a = (ang * Math.PI) / 180;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * 50, Math.sin(a) * 50);
+    ctx.strokeStyle = '#141311'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fillStyle = '#141311'; ctx.fill();
+    c.lastKey = ang.toFixed(3) + '|' + k;
+  }
 
   TB.sceneStudio = {
     build(S, tl) {
       const world = document.getElementById('world');
       const host = document.createElement('div'); host.id = 'studio'; host.className = 'layer';
       const svgNS = 'http://www.w3.org/2000/svg';
-      const blk = (x, y) => { const d = document.createElement('div'); d.style.cssText = `position:absolute;left:0;top:0;transform-origin:${x}px ${y}px`; host.appendChild(d); return d; };
+      const blk = (x, y) => { const d = document.createElement('div'); d.style.cssText = 'position:absolute;left:0;top:0'; host.appendChild(d); return d; };
       // label
       const bLabel = blk(173, 400);
       bLabel.innerHTML = `<div class="cap muted" style="left:173px;top:388px"></div>`;
       bLabel.firstChild.textContent = T.ui.studio;
       // dial
       const bDial = blk(253, 520);
-      const dial = document.createElementNS(svgNS, 'svg');
-      dial.setAttribute('width', 160); dial.setAttribute('height', 160);
-      dial.style.cssText = 'position:absolute;left:173px;top:440px;overflow:visible';
-      const ticks = [];
-      for (let i = 0; i < 24; i++) {
-        const a = (i * 15 * Math.PI) / 180;
-        const ln = document.createElementNS(svgNS, 'line');
-        ln.setAttribute('x1', 80 + Math.cos(a) * 70); ln.setAttribute('y1', 80 + Math.sin(a) * 70);
-        ln.setAttribute('x2', 80 + Math.cos(a) * 79); ln.setAttribute('y2', 80 + Math.sin(a) * 79);
-        ln.setAttribute('stroke', '#C9C4BA'); ln.setAttribute('stroke-width', 1);
-        dial.appendChild(ln); ticks.push(ln);
-      }
-      const ringC = document.createElementNS(svgNS, 'circle');
-      Object.entries({ cx: 80, cy: 80, r: 56, fill: 'none', stroke: '#C9C4BA', 'stroke-width': 1 }).forEach(([k, v]) => ringC.setAttribute(k, v));
-      dial.appendChild(ringC);
-      const active = document.createElementNS(svgNS, 'line');
-      Object.entries({ stroke: ACCENT, 'stroke-width': 2.5, 'stroke-linecap': 'round' }).forEach(([k, v]) => active.setAttribute(k, v));
-      dial.appendChild(active);
-      const needle = document.createElementNS(svgNS, 'line');
-      Object.entries({ x1: 80, y1: 80, x2: 80, y2: 30, stroke: '#141311', 'stroke-width': 1.5, 'stroke-linecap': 'round' }).forEach(([k, v]) => needle.setAttribute(k, v));
-      dial.appendChild(needle);
-      const hub = document.createElementNS(svgNS, 'circle');
-      Object.entries({ cx: 80, cy: 80, r: 3.5, fill: '#141311' }).forEach(([k, v]) => hub.setAttribute(k, v));
-      dial.appendChild(hub);
+      // the dial is a bitmap redrawn from the needle angle (SVG line AA under partial raster is history-dependent)
+      const dial = TB.makeCanvas(180, 180);
+      dial.style.cssText = 'position:absolute;left:163px;top:430px;width:180px;height:180px';
+      dial.lastKey = null;
       bDial.appendChild(dial);
       const wl = document.createElement('div'); wl.className = 'caps'; wl.style.cssText = 'position:absolute;left:365px;top:478px'; wl.textContent = T.ui.warmth;
       const ro = document.createElement('div'); ro.className = 'cap tnum'; ro.style.cssText = 'position:absolute;left:365px;top:514px;color:var(--ink)'; ro.textContent = '+0';
@@ -78,33 +85,25 @@
       TB.tw(tl, P, 'pressUp', 0, 1, CUES.risers.publish[1], 0.12, E.quintOut);
       TB.tw(tl, P, 'ring', 0, 1, press, CUES.risers.publish[1] - press, E.softLinear);
       TB.tw(tl, P, 'ringOut', 0, 1, CUES.risers.lift[0], 0.3, E.sineInOut);
-      S.studio = { host, blocks: [bLabel, bDial, bSl, bPub], needle, active, ticks, ro, btn, ring, per: 2 * (204 + 52), P };
+      S.studio = { host, blocks: [bLabel, bDial, bSl, bPub], dial, ro, btn, ring, per: 2 * (204 + 52), P };
     },
     update(t, S) {
       const St = S.studio, P = St.P;
       const on = t >= CUES.shots.studio[0] && t < CUES.risers.lift[0] + 0.7;
       St.host.style.display = on ? 'block' : 'none';
       // warmth detents (also drive the hero grade even when the panel is gone)
-      const f = t * 30;
-      let k = 0, last = -1;
-      for (let i = 0; i < DETENT_F.length; i++) if (f >= DETENT_F[i] - 1e-6) { k = i + 1; last = DETENT_F[i]; }
-      S.warmK = t >= CUES.shots.studio[0] - 0.6 ? k : 0;
+      const { k, last } = TB.detents(t);
       if (!on) return;
       St.blocks.forEach((b) => {
         const i = b.p.in || 0, o = b.p.out || 0;
         b.style.opacity = (Math.min(1, i * 1.25) * (1 - o)).toFixed(4);
-        b.style.transform = `translateY(${(24 * (1 - i) + 70 * o).toFixed(2)}px) scale(${(0.94 + 0.06 * i).toFixed(4)})`;
+        b.style.top = `${(24 * (1 - i) + 70 * o).toFixed(3)}px`;   // layout offset: no stale transformed raster
       });
       // needle: 15° per detent, expo-out over 60 ms, the step lands on its detent frame
       const e = k > 0 ? TB.E.expoOut(Math.min(1, (t - last / 30 + 1 / 30) / 0.06)) : 0;
       const ang = -90 + 15 * (Math.max(0, k - 1) + (k > 0 ? e : 0));
-      const a = (ang * Math.PI) / 180;
-      St.needle.setAttribute('x2', (80 + Math.cos(a) * 50).toFixed(3));
-      St.needle.setAttribute('y2', (80 + Math.sin(a) * 50).toFixed(3));
-      const ai = (((Math.round((-90 + 15 * k) / 15) % 24) + 24) % 24);
-      const aa = (ai * 15 * Math.PI) / 180;
-      St.active.setAttribute('x1', (80 + Math.cos(aa) * 66).toFixed(3)); St.active.setAttribute('y1', (80 + Math.sin(aa) * 66).toFixed(3));
-      St.active.setAttribute('x2', (80 + Math.cos(aa) * 80).toFixed(3)); St.active.setAttribute('y2', (80 + Math.sin(aa) * 80).toFixed(3));
+      const key = ang.toFixed(3) + '|' + k;
+      if (key !== St.dial.lastKey) drawDial(St.dial, ang, k);
       St.ro.textContent = '+' + k;
       // publish press + long-press stroke
       const pr = (P.pressDn || 0) * (1 - (P.pressUp || 0));

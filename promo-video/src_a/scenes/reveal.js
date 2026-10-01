@@ -6,10 +6,15 @@ SCENES.push({ name: "reveal", build(tl) {
   const e = exitLine(tl, L4, LN.L4[1], 0.33);
   vis(L4.el, [LN.L4[0], e]);
   // top bar: Tipmi (Fraunces 28) · Today — 31 chosen (Inter 22, muted, right-aligned to 1747) · rule y=104
-  const tb = h("div", null, $("cam")); tb.id = "topbar";
-  h("div", "brand", tb, BRAND_NAME);
+  const tb = h("div", null, $("stage")); tb.id = "topbar"; tb.style.zIndex = 2;
+  const br = h("div", "brand", tb, BRAND_NAME);
   const td = h("div", "cap muted today", tb, T.today);
   h("div", "rule", tb);
+  // right-aligned to x = 1747, sharing the brand's baseline (measured once at build)
+  tb.style.display = "block";
+  td.style.left = "auto"; td.style.right = "173px"; td.style.top = "0px";
+  td.style.top = (Wordmark.baselineOf(br) - Wordmark.baselineOf(td)) + "px";
+  tb.style.display = "none";
   S.topbar = tb; S.topbarToday = td;
   tl.fromTo(tb, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: EASE.sineInOut, immediateRender: false }, C.bars[5]);
   tl.fromTo(tb, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: EASE.sineInOut, immediateRender: false }, SH.column[0]);

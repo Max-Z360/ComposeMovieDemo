@@ -12,8 +12,8 @@ G.WALL = {
   P1: { x: 173, y: 360, w: 292, h: 219, lib: 6 },
   P2: { x: 513, y: 360, w: 234, h: 312, lib: 16 },
   P3: { x: 793, y: 360, w: 200, h: 200, lib: 4 },
-  P4: { x: 173, y: 645, w: 234, h: 312, lib: 11 },
-  P5: { x: 455, y: 738, w: 292, h: 219, lib: 21 },
+  P4: { x: 173, y: 639, w: 234, h: 312, lib: 11 },
+  P5: { x: 455, y: 732, w: 292, h: 219, lib: 21 },
   P6: { x: 793, y: 626, w: 220, h: 293, lib: 7 },
   P7: { x: 1500, y: 140, w: 247, h: 329, lib: 18 },
 };
@@ -21,7 +21,7 @@ G.WALL_KEYS = ["P1", "P2", "P3", "P4", "P5", "P6", "P7"];     // reading order (
 G.WALL_MAT = 12;
 // shot 6 camera: 1 % push-in (plates), parallax drift: plates 1.6×, type 2.2× of d
 G.wallCam = t => { const u = EASE.push(clamp((t - SH.wall[0]) / (SH.wall[1] - SH.wall[0]))); return { s: 1 + 0.01 * u, d: 8 * u }; };
-G.wallRect = (r, t) => { const c = G.wallCam(t); const q = scaleRect(r, c.s, 960, 540); q.y -= 1.6 * c.d; return q; };
+G.wallRect = (r, t) => { const c = G.wallCam(t); const q = scaleRect(r, c.s, 173, 540); q.y -= 1.6 * c.d; return q; };
 
 // shot 7–8 feed (screen-local px; screen = 410×886 at (975, 97))
 G.SCR = { x: 975, y: 97 };

@@ -4,7 +4,7 @@ SCENES.push({ name: "carrier", build(tl) {
   const L = S.lib, cam = $("cam");
   const hero = makePlate(cam, null);
   hero.el.id = "hero"; hero.cv.width = L.hero.width; hero.cv.height = L.hero.height;
-  const hctx = hero.cv.getContext("2d");
+  const hctx = hero.cv.getContext("2d", { willReadFrequently: true });
   S.hero = hero;
   // chosen frame (reveal): SVG rect drawn clockwise around the mat
   const fsvg = svgEl("svg", { id: "heroFrame", width: 528, height: 688, viewBox: "0 0 528 688" }, hero.el);
@@ -71,14 +71,13 @@ SCENES.push({ name: "carrier", build(tl) {
     } else if (t < G.SWAP_IN) {                                                 // 7. flying to the column
       paper();
       const u = EASE.expoOut(clamp((t - G.FLY.hero) / G.FLY_DUR));
-      r = rectLerp(G.wallRect(G.WALL.hero, SH.column[0]), G.slotPage("hero", t), u); st.m = M(lerp(12, 8, u));
-      st.clip = screenClip(r.x, r.y, SCR.head);
+      r = rectLerp(G.wallRect(G.WALL.hero, SH.column[0]), G.slotPage("hero", t), u); st.m = M(lerp(12, 8, u)); st.shadow = plateShadow(1 - u);
       capFrom = G.capLayout(r, "inline"); capMode = "feed"; capU = u; dotD = 14;
     } else if (t < G.SWAP_OUT) { return null; }
     else if (t < SH.studio[0] - 0.001) {                                        // 8→9. re-target to the studio
       paper();
       const u = EASE.expoOut(clamp((t - G.SWAP_OUT) / 0.57));
-      r = rectLerp(G.slotPage("hero", G.SWAP_OUT), G.STUDIO, u); st.m = M(lerp(8, 24, u));
+      r = rectLerp(G.slotPage("hero", G.SWAP_OUT), G.STUDIO, u); st.m = M(lerp(8, 24, u)); st.shadow = plateShadow(u);
       capFrom = G.capLayout(r, "feed"); capMode = "hang"; capU = u; dotD = lerp(14, 18, u);
     } else if (t < SH.ledger[0] + 0.0) {                                        // 9–10. studio + publish
       paper(); st.m = M(24); r = G.STUDIO; capMode = "hang";
@@ -131,6 +130,7 @@ SCENES.push({ name: "carrier", build(tl) {
     }
     return to;
   }
+  S.capAt = t => { const st = state(t); return st && st.capMode ? capDot(st) : null; };
   const TRAVEL = [37.3, 38.1];
   upd(t => {
     const st = state(t);
@@ -142,8 +142,6 @@ SCENES.push({ name: "carrier", build(tl) {
       if (t < TRAVEL[0]) {
         const d = st.dotD * st.capS;
         renderDot(dot, p.dx, p.dy, d, st.dotOp);
-        const clip = (t >= SH.column[0] && t < G.SWAP_IN) ? screenClip(p.dx - d / 2, p.dy - d / 2, SCR.head, d / 18) : "none";
-        if (dot._clip !== clip) { dot._clip = clip; dot.style.clipPath = clip; }
       }
     }
     if (t >= TRAVEL[0] && t < C.pictureEnd) {                 // the dot travels to the first tittle

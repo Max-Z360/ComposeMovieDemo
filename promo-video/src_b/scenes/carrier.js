@@ -94,7 +94,8 @@
       H.g.style.display = on ? 'block' : 'none';
       if (!on) return;
       const G = this.geom(t, S);
-      H.g.style.transform = `translate(${G.cx.toFixed(2)}px, ${(G.cy + G.ly).toFixed(2)}px) rotate(${G.rot.toFixed(3)}deg) scale(${G.sc.toFixed(5)}) translate(${(-G.cx).toFixed(2)}px, ${(-G.cy).toFixed(2)}px)`;
+      const ident = Math.abs(G.sc - 1) < 1e-7 && Math.abs(G.rot) < 1e-7 && Math.abs(G.ly) < 1e-7;
+      H.g.style.transform = ident ? 'none' : `translate(${G.cx.toFixed(2)}px, ${(G.cy + G.ly).toFixed(2)}px) rotate(${G.rot.toFixed(3)}deg) scale(${G.sc.toFixed(5)}) translate(${(-G.cx).toFixed(2)}px, ${(-G.cy).toFixed(2)}px)`;
       const rin = P.rin || 0;
       H.g.style.opacity = (Math.min(1, rin * 1.4) * (1 - (P.fade || 0))).toFixed(4);
       // blur-in only during the reveal window (≤ 1 blurred element at once with L4 not yet in)
@@ -109,19 +110,19 @@
       ms.boxShadow = `${4 + 2 * L}px ${2 + 2 * L}px ${4 + 4 * L}px rgba(20,19,17,${a1.toFixed(3)}), ${10 + 6 * L}px ${y2.toFixed(1)}px ${b2.toFixed(1)}px rgba(20,19,17,${a2.toFixed(3)})` +
         (sp > 0 ? `, inset 0 1px 0 rgba(255,255,255,${(0.9 * sp).toFixed(3)})` : '');
       // content: warmth grade index (studio dial), redrawn only when it changes (pure in its key)
-      const key = S.warmK || 0;
+      const key = TB.detents(t).k;
       if (key !== H.key) { const c = H.cv.getContext('2d'); c.drawImage(S.lib.warmth[key], 0, 0); H.key = key; }
       // caption (masked rise), dot, published
       const cm = H.capMask.style;
       cm.left = (G.mx + 22 * G.di) + 'px'; cm.top = (G.capTop - 2) + 'px';
-      H.cap.style.fontSize = G.r.fs.toFixed(3) + 'px';
-      H.cap.style.transform = `translateY(${((1 - (P.cap || 0)) * 120).toFixed(2)}%)`;
+      H.cap.style.fontSize = Math.round(G.r.fs) + 'px';   // integer sizes only (fractional glyph rasters are cache-dependent)
+      H.cap.style.top = `${((1 - (P.cap || 0)) * 32).toFixed(3)}px`;
       const dv = P.dot || 0;
       const ds = H.dot.style;
       ds.display = dv > 0 ? 'block' : 'none';
-      ds.width = ds.height = G.d + 'px';
-      ds.left = (G.dotX - G.d / 2) + 'px'; ds.top = (G.dotY - G.d / 2) + 'px';
-      ds.transform = `scale(${(0.94 + 0.06 * dv).toFixed(4)})`;
+      const dd = G.d * (0.94 + 0.06 * dv);   // the dot "sets" 94 -> 100 % via its size (layout), not a transform
+      ds.width = ds.height = dd.toFixed(3) + 'px';
+      ds.left = (G.dotX - dd / 2).toFixed(3) + 'px'; ds.top = (G.dotY - dd / 2).toFixed(3) + 'px';
       ds.opacity = t >= CUES.shots.logo[0] ? '0' : '1';            // logo.js flies its own dot from here
       const ps = H.pub.style;
       const pv = (P.pub || 0) * (1 - (P.pubOut || 0));

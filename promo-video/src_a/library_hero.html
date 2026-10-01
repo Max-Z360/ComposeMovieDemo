@@ -1,5 +1,0 @@
-<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
-<style>html,body{margin:0;background:#0C0B0A}#r{display:flex;gap:20px;padding:20px}canvas{display:block}</style></head><body><div id="r"></div>
-<script src="constants.js"></script><script src="gen/prng.js"></script><script src="gen/cards.js"></script>
-<script>window.READY=(async()=>{await document.fonts.load('italic 400 320px Fraunces');const L=Cards.buildLibrary(SEED,{noDissolve:true});
-const r=document.getElementById('r');[0,1,3,6].forEach(i=>{const c=L.plates[i].canvas;c.style.width=(i==0?540:c.width*0.9)+'px';r.appendChild(c)});})();</script></body></html>

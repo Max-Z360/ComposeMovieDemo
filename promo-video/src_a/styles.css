@@ -37,7 +37,7 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 .line.bone { color: var(--bone); }
 .line .row { display: block; }
 .m { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.14em 0.04em 0.26em; margin: -0.14em -0.04em -0.26em; }
-.w { display: inline-block; will-change: transform; }
+.w { display: inline-block; }
 .zh .line, .line.zh { font-family: "Noto Sans SC"; font-variation-settings: "wght" 400; letter-spacing: 0; font-style: normal; }
 
 /* ---- captions / UI (one size: 22 px Inter) --------------------------------------------------- */
@@ -98,3 +98,4 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 .wordmark .tittle { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: var(--accent); }
 .tagline { position: absolute; left: 173px; font-family: var(--display); font-size: 44px; line-height: 44px; white-space: nowrap;
   font-variation-settings: "opsz" 144, "wght" 400, "SOFT" 50, "WONK" 0; letter-spacing: -0.015em; color: var(--ink); }
+.zh .cap, .zh .caps, .zh .fcap, .zh #status .time, .zh #apphead .today { font-family: "Inter", "Noto Sans SC"; }

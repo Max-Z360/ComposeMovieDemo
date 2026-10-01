@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Tipmi — launch film (variant a)</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1920" height="1080"></canvas>
+  <div id="cam"><div id="lines"></div></div>
+  <div id="band"></div>
+  <canvas id="grain" width="1920" height="1080"></canvas>
+  <div id="black"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../src/cues.js"></script>
+<script src="constants.js"></script>
+<script src="gen/prng.js"></script>
+<script src="gen/cards.js"></script>
+<script src="gen/grain.js"></script>
+<script src="gen/light.js"></script>
+<script src="gen/wall.js"></script>
+<script src="gen/wordmark.js"></script>
+<script src="core.js"></script>
+<script>const SCENES = [];</script>
+<script src="scenes/geom.js"></script>
+<script src="scenes/hook.js"></script>
+<script src="scenes/turn.js"></script>
+<script src="scenes/reveal.js"></script>
+<script src="scenes/wall.js"></script>
+<script src="scenes/column.js"></script>
+<script src="scenes/studio.js"></script>
+<script src="scenes/ledger.js"></script>
+<script src="scenes/human.js"></script>
+<script src="scenes/logo.js"></script>
+<script src="scenes/carrier.js"></script>
+<script>
+// ---- render contract: DURATION, READY, seek(t) — every frame is a pure function of t ------------
+gsap.ticker.lagSmoothing(0);
+gsap.globalTimeline.pause();
+gsap.defaults({ lazy: false, overwrite: false });
+window.DURATION = CUES.duration;                 // 42.5: picture 0–42.000, black until 42.5
+const FONT_SPECS = [
+  '400 84px Fraunces', 'italic 400 84px Fraunces', '500 176px Fraunces', '500 28px Fraunces', '600 44px Fraunces',
+  'italic 400 320px Fraunces', '500 22px Inter', '500 21px Inter', '500 16px Inter', '500 14px Inter',
+  '400 84px "Noto Sans SC"', '500 22px "Noto Sans SC"',
+];
+let tl = null, bgctx = null;
+const grainEl = document.getElementById('grain'), bandEl = document.getElementById('band');
+window.READY = (async () => {
+  await Promise.all(FONT_SPECS.map(f => document.fonts.load(f, ZH ? '你好Tipmi' : 'Tipmiı')));
+  await document.fonts.ready;
+  if (ZH) document.body.classList.add('zh');
+  S.lib = Cards.buildLibrary(SEED);               // 24 plates, hero grades, dissolve keyframes, thumbs
+  Grain.build(SEED);
+  Light.build();
+  G.buildFeed(S.lib);
+  bgctx = document.getElementById('bg').getContext('2d', DBG.has('gpubg') ? {} : { willReadFrequently: true });
+  tl = gsap.timeline({ paused: true, defaults: { lazy: false } });
+  for (const sc of SCENES) sc.build(tl);
+  tl.set({}, {}, CUES.duration);                  // timeline spans the whole film
+  // explicit initial states: for every target·property, apply the `from` values of its EARLIEST tween.
+  // (A rewound immediateRender:false tween reverts to the pre-tween inline values, so those must be the
+  // true start state; later tweens chain from earlier ones' end values by construction.)
+  const seen = new Map();
+  tl.getChildren(false, true, false).sort((a, b) => a.startTime() - b.startTime()).forEach(tw => {
+    const from = tw.vars.startAt; if (!from) return;
+    tw.targets().forEach(tg => {
+      let set = seen.get(tg); if (!set) seen.set(tg, set = new Set());
+      const apply = {};
+      for (const k in from) {
+        if (k === 'attr') { for (const a in from.attr) if (!set.has('@' + a)) { set.add('@' + a); (apply.attr = apply.attr || {})[a] = from.attr[a]; } }
+        else if (!set.has(k)) { set.add(k); apply[k] = from[k]; }
+      }
+      if (Object.keys(apply).length) { const z = gsap.set(tg, apply); z.progress(1, true); z.kill(); }
+    });
+  });
+  window.seek(0);
+})();
+
+const stageEl = document.getElementById('stage');
+// the soft-light film-grain layer covers only where the work is (paper already carries baked grain)
+function grainBox(t) {
+  if (t < SH.turn[0]) return [0, 0, 1920, 1080];               // hook: the wall fills the frame
+  if (t < SH.reveal[0]) return null;                            // empty paper
+  if (t < SH.wall[0]) return [1040, 140, 680, 860];             // the mounted hero
+  if (t < 21.0) return [140, 100, 1660, 920];                   // the wall / the flight
+  if (t < SH.studio[0]) return [940, 60, 760, 1000];            // the phone → re-target
+  if (t < SH.logo[0] + 0.3) return [1020, 120, 700, 900];       // studio, ledger, print
+  return null;                                                  // end card: paper + type
+}
+const DBG = new URLSearchParams(location.search); window.DBG_NOFIELD = DBG.has('nofield');
+window.seek = function (t) {
+  // re-attach the stage: Chromium rebuilds every composited layer and rasterizes it fresh, so a frame
+  // never depends on what was rendered before it (worker chunk boundaries, seek order)
+  if (!DBG.has('noreattach')) document.body.appendChild(stageEl);
+  // the freeze: everything holds dead still 7.857–8.571 (t clamped)
+  const tv = (t >= CUES.mute[0] && t < CUES.mute[1]) ? CUES.mute[0] : t;
+  applyVis(tv);
+  tl.seek(tv, false);
+  for (const u of S.upd) u(tv);
+  const black = t >= CUES.pictureEnd;
+  Light.draw(bgctx, tv, { black, ink: tv < SH.turn[0], wall: tv >= SH.hookB[0] ? Wall.draw : null, ao: S.aoAlpha ? S.aoAlpha(tv) : 0 });
+  // window-light band over plates and type (soft-light), same position as the field band
+  const bx = Light.bandCenter(tv), ba = bx == null || black ? 0 : Light.bandAlpha(tv);
+  const ink = tv < SH.turn[0];
+  bandEl.style.display = ba > 0 && !DBG.has('noband') ? 'block' : 'none';
+  if (ba > 0) {
+    bandEl.style.transform = `translate(${fmt(bx - 210)}px,0) rotate(-8deg)`;
+    bandEl.style.opacity = fmt((ink ? 0.25 : 0.18) * ba);
+  }
+  // film grain (soft-light, 24 fps cadence) over everything
+  grainEl.style.display = black || DBG.has('nograin') ? 'none' : 'block';
+  const gbox = grainBox(tv);
+  if (!gbox) grainEl.style.display = 'none';
+  else if (!black) { Grain.drawTop(grainEl, tv, gbox); grainEl.style.opacity = ink ? 0.12 : 0.10; }
+};
+</script>
+</body></html>
