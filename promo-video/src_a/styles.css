@@ -1,0 +1,100 @@
+/* Tipmi launch film — variant a. Design tokens (brief §3) + components. */
+:root {
+  --bg: #0C0B0A;
+  --paper: #F4F1EB;
+  --paper-deep: #EAE6DE;
+  --paper-light: #FBF8F2;
+  --rule: #C9C4BA;
+  --ink: #141311;
+  --ink-soft: #3A3835;
+  --muted: #8A867E;
+  --accent: #7A2E35;
+  --accent-2: #B8674A;
+  --bezel: #1A1917;
+  --bone: #ECE8E1;
+  --shadow-plate: 0 2px 4px rgba(20,19,17,.08), 0 24px 48px rgba(20,19,17,.14);
+  --shadow-phone: 0 4px 10px rgba(20,19,17,.14), 0 48px 96px rgba(20,19,17,.24);
+  --fr-display: "opsz" 144, "wght" 400, "SOFT" 50, "WONK" 0;
+  --display: "Fraunces";
+  --text: "Inter";
+}
+*, *::before, *::after { transition: none !important; animation: none !important; box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); perspective: 1800px; }
+#bg, #grain { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#bg { z-index: 0; }
+#phoneLayer { position: absolute; inset: 0; z-index: 1; perspective: 1800px; perspective-origin: 960px 540px; }
+#cam { position: absolute; inset: 0; z-index: 2; }
+#band { position: absolute; z-index: 3; left: 0; top: -160px; width: 420px; height: 1400px; mix-blend-mode: soft-light; pointer-events: none;
+  background: linear-gradient(90deg, rgba(251,248,242,0), var(--paper-light) 50%, rgba(251,248,242,0)); transform-origin: 210px 700px; }
+#grain { z-index: 4; mix-blend-mode: soft-light; pointer-events: none; }
+#black { position: absolute; inset: 0; z-index: 9; background: #000; display: none; }
+
+/* ---- display type (one size: 84 px) ---------------------------------------------------------- */
+.line { position: absolute; left: 173px; top: 212px; width: 900px; font-family: var(--display); font-size: 84px; line-height: 1;
+  font-variation-settings: var(--fr-display); letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; display: none; }
+.line.ital { font-style: italic; }
+.line.bone { color: var(--bone); }
+.line .row { display: block; }
+.m { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.14em 0.04em 0.26em; margin: -0.14em -0.04em -0.26em; }
+.w { display: inline-block; will-change: transform; }
+.zh .line, .line.zh { font-family: "Noto Sans SC"; font-variation-settings: "wght" 400; letter-spacing: 0; font-style: normal; }
+
+/* ---- captions / UI (one size: 22 px Inter) --------------------------------------------------- */
+.cap { position: absolute; left: 0; top: 0; font-family: var(--text); font-size: 22px; line-height: 26px; font-weight: 500;
+  letter-spacing: 0.03em; color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; transform-origin: 0 0; }
+.cap.muted { color: var(--muted); }
+.caps { font-family: var(--text); font-size: 22px; line-height: 26px; font-weight: 500; letter-spacing: 0.05em; color: var(--muted); white-space: nowrap; }
+.dot { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--accent); transform-origin: 50% 50%; }
+
+/* ---- plates (mounted work) ------------------------------------------------------------------- */
+.plate { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; background: var(--paper-deep); box-shadow: var(--shadow-plate); }
+.plate .edge { position: absolute; inset: 0; border: 1px solid var(--rule); pointer-events: none; }
+.plate canvas.pc { position: absolute; display: block; object-fit: cover; }
+.plate .dim { position: absolute; background: #000; opacity: 0; }
+#hero { z-index: 5; }
+#heroFrame { position: absolute; overflow: visible; pointer-events: none; }
+
+/* ---- top bar --------------------------------------------------------------------------------- */
+#topbar { position: absolute; left: 0; top: 0; width: 1920px; height: 120px; display: none; }
+#topbar .brand { position: absolute; left: 173px; top: 64px; font-family: var(--display); font-size: 28px; line-height: 28px;
+  font-variation-settings: "opsz" 72, "wght" 500, "SOFT" 50, "WONK" 0; letter-spacing: -0.015em; color: var(--ink); }
+#topbar .today { position: absolute; right: 173px; top: 0; }
+#topbar .rule { position: absolute; left: 173px; top: 104px; width: 1574px; height: 1px; background: var(--rule); }
+.hair { position: absolute; height: 1px; background: var(--rule); transform-origin: 0 50%; }
+
+/* ---- phone ----------------------------------------------------------------------------------- */
+#phone { position: absolute; left: 963px; top: 85px; width: 434px; height: 910px; transform-origin: 217px 455px; display: none; }
+#phoneShadow { position: absolute; inset: 0; border-radius: 64px; box-shadow: var(--shadow-phone); opacity: 0; }
+#screen { position: absolute; left: 12px; top: 12px; width: 410px; height: 886px; border-radius: 52px; overflow: hidden; background: var(--paper); }
+#feed { position: absolute; left: 0; top: 0; width: 410px; }
+#status { position: absolute; left: 0; top: 0; width: 410px; height: 46px; background: var(--paper); }
+#status .time { position: absolute; left: 44px; top: 15px; font: 500 16px/16px var(--text); letter-spacing: 0.02em; color: var(--muted); font-variant-numeric: tabular-nums; }
+#status svg { position: absolute; right: 40px; top: 18px; }
+#apphead { position: absolute; left: 0; top: 46px; width: 410px; height: 56px; background: var(--paper); }
+#apphead .brand { position: absolute; left: 24px; top: 14px; font-family: var(--display); font-size: 25px; line-height: 25px;
+  font-variation-settings: "opsz" 72, "wght" 500, "SOFT" 50, "WONK" 0; letter-spacing: -0.015em; color: var(--ink); }
+#apphead .today { position: absolute; right: 24px; top: 17px; font: 500 21px/21px var(--text); letter-spacing: 0.03em; color: var(--muted); white-space: nowrap; }
+#apphead .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--rule); }
+.fcap { position: absolute; font: 500 21px/25px var(--text); letter-spacing: 0.03em; color: var(--ink-soft); white-space: nowrap; }
+.fdot { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--accent); }
+#bezelSvg { position: absolute; left: 0; top: 0; overflow: visible; }
+#glare { position: absolute; left: 12px; top: 12px; width: 410px; height: 886px; border-radius: 52px; pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,.12), rgba(255,255,255,0) 40%); background-size: 200% 100%; background-repeat: no-repeat; opacity: 0; }
+
+/* ---- studio ---------------------------------------------------------------------------------- */
+#studio { position: absolute; inset: 0; display: none; }
+.grp { position: absolute; left: 0; top: 0; }
+.mask { position: absolute; overflow: hidden; }
+.slider .track { position: absolute; height: 1px; background: var(--rule); }
+.slider .thumb { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--ink-soft); }
+#pubBtn { position: absolute; left: 173px; top: 840px; width: 200px; height: 48px; border: 1px solid var(--rule); transform-origin: 50% 50%; }
+#pubBtn .caps { position: absolute; left: 0; right: 0; top: 11px; text-align: center; color: var(--ink-soft); }
+
+/* ---- logo card ------------------------------------------------------------------------------- */
+#card { position: absolute; inset: 0; display: none; transform-origin: 960px 540px; }
+.wordmark { position: absolute; left: 173px; font-family: var(--display); font-size: 176px; line-height: 176px; white-space: nowrap;
+  font-variation-settings: "opsz" 144, "wght" 500, "SOFT" 50, "WONK" 0; letter-spacing: -0.025em; color: var(--ink); transform-origin: 0 50%; }
+.wordmark .tittle { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: var(--accent); }
+.tagline { position: absolute; left: 173px; font-family: var(--display); font-size: 44px; line-height: 44px; white-space: nowrap;
+  font-variation-settings: "opsz" 144, "wght" 400, "SOFT" 50, "WONK" 0; letter-spacing: -0.015em; color: var(--ink); }

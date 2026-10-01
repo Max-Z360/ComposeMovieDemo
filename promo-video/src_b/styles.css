@@ -1,0 +1,71 @@
+/* Tipmi film, variant b — design tokens (brief §3) + components. Every frame is set from seek(t); no transitions. */
+:root {
+  --bg: #0C0B0A;
+  --paper: #F4F1EB;
+  --paper-deep: #EAE6DE;
+  --paper-light: #FBF8F2;
+  --rule: #C9C4BA;
+  --ink: #141311;
+  --ink-soft: #3A3835;
+  --muted: #6E6A63;            /* brief #8A867E measures 3.2:1 on paper (fails its own 4.5:1 check); darkened to 4.8:1 */
+  --accent: #7A2E35;
+  --accent-2: #B8674A;
+  --bone: #ECE8E1;
+  --bezel: #1A1917;
+  --shadow-plate: 4px 2px 4px rgba(20,19,17,.08), 10px 24px 48px rgba(20,19,17,.14);
+  --shadow-phone: 0 4px 10px rgba(20,19,17,.14), 0 48px 96px rgba(20,19,17,.24);
+  --display: "Fraunces";
+  --sans: "Inter";
+}
+*, *::before, *::after { transition: none !important; animation: none !important; box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+.layer, canvas.full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+.abs { position: absolute; left: 0; top: 0; }
+.hidden { display: none; }
+
+/* ---- display type ---- */
+.line { position: absolute; left: 173px; top: 212px; width: 900px; color: var(--ink);
+  font-family: var(--display); font-size: 84px; line-height: 1; letter-spacing: -0.02em; font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0; white-space: nowrap; will-change: transform, opacity; }
+.line.bone { color: var(--bone); }
+.line.italic { font-style: italic; }
+.line .mask { display: block; overflow: hidden; padding: 0.06em 0 0.24em; margin: -0.06em 0 -0.24em; }
+.line .w { display: inline-block; white-space: pre; transform: translateY(1.3em); }
+.zh .line, .zh .line.italic { font-family: "Noto Sans SC"; font-style: normal; font-variation-settings: normal; letter-spacing: 0; }
+
+/* ---- captions / UI ---- */
+.cap { position: absolute; font: 500 22px/1.2 var(--sans); letter-spacing: 0.03em; color: var(--ink-soft); white-space: nowrap; }
+.caps { font: 500 22px/1.2 var(--sans); letter-spacing: 0.05em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.muted { color: var(--muted); }
+.tnum { font-variant-numeric: tabular-nums; }
+.zh .cap, .zh .caps { font-family: "Noto Sans SC"; letter-spacing: 0.02em; }
+
+/* ---- mounted plate ---- */
+.group { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.mount { position: absolute; background: var(--paper-deep); border: 1px solid var(--rule); box-shadow: var(--shadow-plate); }
+.mount canvas { position: absolute; display: block; }
+.dot { position: absolute; border-radius: 50%; background: var(--accent); }
+
+/* ---- top bar ---- */
+#topbar .brand { position: absolute; left: 173px; top: 85px; font: 500 28px/1 var(--display); letter-spacing: -0.015em; color: var(--ink);
+  font-variation-settings: "opsz" 72, "SOFT" 50; }
+#topbar .today { position: absolute; right: 173px; top: 88px; text-align: right; }
+#topbar .rule { position: absolute; left: 173px; top: 136px; width: 1574px; height: 1px; background: var(--rule); }
+
+/* ---- phone ---- */
+#device { transform-origin: 1180px 540px; }
+#screen { overflow: visible; }
+.hdr { position: absolute; background: var(--paper); }
+.hdr .status { position: absolute; left: 0; top: 0; width: 410px; height: 46px; font: 500 16px/46px var(--sans); color: var(--muted); }
+.hdr .appbar { position: absolute; left: 0; top: 46px; width: 410px; height: 56px; border-bottom: 1px solid var(--rule); }
+
+/* ---- studio ---- */
+.slider .track { position: absolute; height: 1px; background: var(--rule); }
+.slider .thumb { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--ink-soft); }
+#publish { position: absolute; width: 200px; height: 48px; border: 1px solid var(--ink-soft); display: flex; align-items: center; justify-content: center; }
+#publish span { color: var(--ink-soft); }
+
+/* ---- overlays ---- */
+#vignette { pointer-events: none; }
+#black { background: #000; }
