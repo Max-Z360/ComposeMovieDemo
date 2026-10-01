@@ -4,6 +4,10 @@ out/preview*/
 out/review*/
 out/a/
 out/b/
+out/*.mp4
+out/accept.json
+out/zh/
+out/page/
 *.log
 # font binaries are re-fetched by fonts/fetch.sh; the families used by the final film are force-added
 fonts/*.ttf
