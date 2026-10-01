@@ -1,6 +1,6 @@
 # 01 — Positioning Brief
 
-Working title: **LUNE** (placeholder — swap-ready, see §4)
+Brand name: **Tipmi** (FINAL — provided by the client on 2026-10-01; the placeholder-name exploration in §4 is kept for the record only and is superseded)
 Deliverable: one brand/launch film, 35–50 s, English on-screen copy, CN swap later.
 Author: brand strategy pass (Fable 5.1). Research used live WebSearch (Oct 2026); sources at the end.
 
@@ -29,7 +29,7 @@ Author: brand strategy pass (Fable 5.1). Research used live WebSearch (Oct 2026)
 
 ## 1. Positioning statement
 
-**LUNE is the first social platform where every piece of work is chosen, not ranked.** It is a hand‑curated home for photographers, filmmakers, designers, writers and lifestyle creators who are tired of making more to be seen less: a feed with no filler, no ads, no synthetic noise — only finished, beautiful work — paired with a studio of creator tools (capture, edit, present, publish, price, sell) and a direct line from audience to income with a transparent split. For the audience it feels like a gallery you'd pay to walk through; for creators it feels like finally being shown to the right people, and paid for it. Where Instagram optimizes for time‑on‑app, RedNote for commerce, and OnlyFans for transactions, LUNE optimizes for *the quality of what gets seen* — and lets the money follow the work.
+**Tipmi is the first social platform where every piece of work is chosen, not ranked.** It is a hand‑curated home for photographers, filmmakers, designers, writers and lifestyle creators who are tired of making more to be seen less: a feed with no filler, no ads, no synthetic noise — only finished, beautiful work — paired with a studio of creator tools (capture, edit, present, publish, price, sell) and a direct line from audience to income with a transparent split. For the audience it feels like a gallery you'd pay to walk through; for creators it feels like finally being shown to the right people, and paid for it. Where Instagram optimizes for time‑on‑app, RedNote for commerce, and OnlyFans for transactions, Tipmi optimizes for *the quality of what gets seen* — and lets the money follow the work.
 
 One‑liner for internal use: *Curated like a gallery. Built like a studio. Pays like a patron.*
 
@@ -88,7 +88,7 @@ Criteria: 1–2 syllables, pronounceable in EN/CN/JP/ES, feels like a gallery or
 
 Avoided on purpose: Vellum (Vellum AI), Curio (taken), Muse (band), Prisma (photo app + ORM), Linea (crypto L2), Glass/Cosmos/Cara (direct competitors), anything with "-ly", "-ify", "-gram".
 
-**Top 3: LUNE › ORIEL › SABLE.** Proceed with LUNE as the working mark. Keep the name as a single constant (e.g. `BRAND_NAME`) in the video source and a single wordmark asset so the swap is one edit.
+**Top 3 (superseded by the client name Tipmi): LUNE › ORIEL › SABLE.** Keep the name as a single constant (e.g. `BRAND_NAME`) in the video source and a single wordmark asset so the swap is one edit.
 
 ---
 
@@ -121,7 +121,7 @@ Editorial. Gallery‑quiet. Tactile. Confident, not boastful. Cinematic, slow cu
 - Lines longer than 5–6 words — every on‑screen line must survive translation to ≤8 Chinese characters.
 
 ### Call to action (end card)
-`LUNE` wordmark · *Chosen, not ranked.* · "Now accepting creators." (alt: "Request an invite.") — invitation‑only wording reinforces curation; keep the CTA swappable.
+`Tipmi` wordmark · *Chosen, not ranked.* · "Now accepting creators." (alt: "Request an invite.") — invitation‑only wording reinforces curation; keep the CTA swappable.
 
 ---
 
