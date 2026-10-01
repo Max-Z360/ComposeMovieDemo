@@ -117,35 +117,39 @@ SCENES.push({ name: "carrier", build(tl) {
     if (f > 0 && k < 15) { hctx.globalAlpha = f; hctx.drawImage(L.dissolve[k + 1], 0, 0); hctx.globalAlpha = 1; }
   }
 
-  // dot position on the end card: the first tittle, under the card push-in
+  // caption + dot from the (push-scaled, un-lifted) mat rect — pure in the state
+  function capDot(st) {
+    const r = st.r, [ox, oy] = cen(r), rs = scaleRect(r, st.capS, ox, oy);
+    let to;
+    if (st.capMode === "print") {
+      const pr = scaleRect(G.PRINT, st.capS, ...cen(G.PRINT)); const p = G.capLayout(pr, "hang");
+      p.cy += 8; p.dy += 8;                                   // the print's weighted foot needs more air
+      to = G.lerpCap(G.capLayout(scaleRect(G.STUDIO, 1.015, ...cen(G.STUDIO)), "hang"), p, st.capU);
+    } else {
+      to = G.capLayout(rs, st.capMode);
+      if (st.capFrom) to = G.lerpCap(st.capFrom, to, st.capU);
+    }
+    return to;
+  }
+  const TRAVEL = [37.3, 38.1];
   upd(t => {
     const st = state(t);
     if (st) { content(st.content); renderPlate(hero, st); }
-    // caption + dot from the (push-scaled, un-lifted) mat rect
-    let cx = 0, cy = 0, dx = 0, dy = 0, cs = 1, d = 18, op = 1;
     if (st && st.capMode) {
-      const r = st.r, [ox, oy] = cen(r);
-      const rs = scaleRect(r, st.capS, ox, oy);
-      let to;
-      if (st.capMode === "print") {
-        const pr = scaleRect(G.PRINT, st.capS, ...cen(G.PRINT)); to = G.capLayout(pr, "hang"); to.cy += 8; to.dy += 8; to.cx -= 0;
-        const from = G.capLayout(scaleRect(G.STUDIO, 1.015, ...cen(G.STUDIO)), "hang");
-        to = G.lerpCap(from, to, st.capU);
-      } else {
-        to = G.capLayout(rs, st.capMode);
-        if (st.capFrom) to = G.lerpCap(st.capFrom, to, st.capU);
-      }
-      cx = to.cx; cy = to.cy; dx = to.dx; dy = to.dy; cs = st.capS; d = st.dotD; op = st.dotOp;
-      S.heroCapPos = to;
-      const tr = `translate(${fmt(cx)}px,${fmt(cy)}px) scale(${fmt(cs)})`;
+      const p = capDot(st);
+      const tr = `translate(${fmt(p.cx)}px,${fmt(p.cy)}px) scale(${fmt(st.capS)})`;
       if (cap._tr !== tr) { cap._tr = tr; cap.style.transform = tr; }
+      if (t < TRAVEL[0]) {
+        const d = st.dotD * st.capS;
+        renderDot(dot, p.dx, p.dy, d, st.dotOp);
+        const clip = (t >= SH.column[0] && t < G.SWAP_IN) ? screenClip(p.dx - d / 2, p.dy - d / 2, SCR.head, d / 18) : "none";
+        if (dot._clip !== clip) { dot._clip = clip; dot.style.clipPath = clip; }
+      }
     }
-    // the dot
-    if (t >= SH.logo[0] && t < C.pictureEnd) {
-      const p0 = S.heroCapPos || { dx: 1056, dy: 959 };
-      const tit = S.tittle1(t);
-      const u = EASE.camera(clamp((t - 37.3) / 0.8));
-      renderDot(dot, lerp(p0.dx, tit.x, u), lerp(p0.dy, tit.y, u), lerp(18, tit.d, u), 1);
-    } else if (st && st.capMode) renderDot(dot, dx, dy, d * cs, op);
+    if (t >= TRAVEL[0] && t < C.pictureEnd) {                 // the dot travels to the first tittle
+      const s0 = state(TRAVEL[0]), p0 = capDot(s0), tit = S.tittle1(t);
+      const u = EASE.camera(clamp((t - TRAVEL[0]) / (TRAVEL[1] - TRAVEL[0])));
+      renderDot(dot, lerp(p0.dx, tit.x, u), lerp(p0.dy, tit.y, u), lerp(18 * s0.capS, tit.d, u), 1);
+    }
   });
 } });

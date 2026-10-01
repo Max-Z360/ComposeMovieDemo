@@ -105,10 +105,10 @@ function renderPlate(P, st) {
 // clip-path polygon (element-local) that hides the parts of an element at page rect (x,y,w,h)
 // lying inside the phone column band but outside the visible screen window (rounded corners).
 const SCR = { x: 975, y: 97, w: 410, h: 886, r: 52, head: 102 };
-function screenClip(x, y, topInset) {
+function screenClip(x, y, topInset, sc = 1) {
   const X0 = SCR.x, X1 = SCR.x + SCR.w, Y0 = SCR.y + topInset, Y1 = SCR.y + SCR.h, r = SCR.r, B = 4000;
   const pts = [];
-  const P = (px, py) => pts.push(`${fmt(px - x)}px ${fmt(py - y)}px`);
+  const P = (px, py) => pts.push(`${fmt((px - x) / sc)}px ${fmt((py - y) / sc)}px`);
   P(-B, -B); P(X0, -B);
   if (topInset > 0) { P(X0, Y0); P(X1, Y0); }
   else { // rounded top corners of the screen
