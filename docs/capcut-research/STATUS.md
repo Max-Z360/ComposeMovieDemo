@@ -10,11 +10,11 @@
 |---|------|----------|------|
 | A | 字节特效 / CV SDK（美颜、人脸关键点、贴纸、组合特效、资源包）、Effect House 引擎 | `research_effects.md` | 进行中 |
 | B | 剪辑引擎 NLE、草稿数据模型、素材管理、模板、跨端架构、渲染与导出 | `research_nle.md` | 进行中 |
-| C | 移动端客户端工程实践（架构、性能、动态下发、机型分级） | `research_mobile.md` | 待开始 |
-| D | 文字/花字、关键帧、蒙版、抠图、混合模式、转场、变速的实现 | `research_render.md` | 待开始 |
-| E | 智能剪辑与 AI 功能（抠像、字幕、TTS、超分、补帧、防抖等） | `research_ai.md` | 待开始 |
-| F | 用开源组件搭建类剪映架构的 Android 参考方案 | `research_oss.md` | 待开始 |
-| G | 人脸检测/关键点/美颜/变形算法深入 | `research_face.md` | 待开始 |
+| C | 移动端客户端工程实践（架构、性能、动态下发、机型分级） | `research_mobile.md` | 进行中 |
+| D | 文字/花字、关键帧、蒙版、抠图、混合模式、转场、变速的实现 | `research_render.md` | 进行中 |
+| E | 智能剪辑与 AI 功能（抠像、字幕、TTS、超分、补帧、防抖等） | `research_ai.md` | 进行中 |
+| F | 用开源组件搭建类剪映架构的 Android 参考方案 | `research_oss.md` | 进行中 |
+| G | 人脸检测/关键点/美颜/变形算法深入 | `research_face.md` | 进行中 |
 | H | 汇总报告 | `README.md` | 待开始 |
 
 ## 明确不在本次范围内
