@@ -15,7 +15,7 @@
 | E | 智能剪辑与 AI 功能（抠像、字幕、TTS、超分、补帧、防抖等） | `research_ai.md` | 进行中 |
 | F | 用开源组件搭建类剪映架构的 Android 参考方案 | `research_oss.md` | 进行中 |
 | G | 人脸检测/关键点/美颜/变形算法深入 | `research_face.md` | 进行中 |
-| H | 汇总报告 | `README.md` | 待开始 |
+| H | 汇总报告 | `README.md` | 初版（覆盖 A、B） |
 
 ## 明确不在本次范围内
 
