@@ -14,6 +14,7 @@
 | **[官方-代码]** | 字节跳动 / 火山引擎 / BytePlus 官方 GitHub 仓库中的头文件、Demo 或资源，作者已直接读取原文 |
 | **[官方-文档]** | 火山引擎、BytePlus 或 Effect House 官方文档（多数通过搜索摘要获得，原因见 0.3） |
 | **[第三方集成]** | Agora、七牛等厂商公开的 ByteDance SDK 集成代码。这类代码直接调用官方 SDK，可信度高，但不是字节官方发布 |
+| **[公开项目]** | 创作者自行上传到 GitHub 的 Effect House 导出项目（非字节官方发布，但由官方工具生成） |
 | **[公开镜像-非官方]** | 第三方在 GitHub 上传的已安装 CapCut 桌面版资源文件。作者只看了文件名和明文配置，没有解密，也没有使用反编译代码 |
 | **[媒体]** | 新闻报道、职位描述 |
 | **[推断]** | 作者根据上面的证据推理得出，没有官方确认 |
@@ -30,7 +31,7 @@
 - TikTok 的职位描述写到：“We own the Effect SDK powering TikTok's camera and creation experience”，“self-developed rendering engine”，链路为 camera → effect → render → encode，要求 C/C++ 以及 OpenGL ES / Metal / Vulkan。
   - 来源：[媒体] https://lifeattiktok.com/search/7628834530694416693 ，https://www.dice.com/job-detail/ea991445-eebc-48e0-9a01-8f1553b6dd92 ，https://www.themuse.com/jobs/tiktok/senior-software-engineer-cc-sdk-performance-optimization
 - 本次发现的最强一致性证据有两条：
-  - 公开镜像中 CapCut 桌面版的美颜资源包，与 Effect House 导出的公开项目使用**完全相同**的算法图配置 schema（`algorithmConfig.json`，含 `blit`、`face`、`nh_face_align`、`script` 节点）和相同的 `AmazingFeature` 运行时，详见第 9、10 节。
+  - 公开镜像中 CapCut 桌面版的美颜资源包，与 Effect House 导出的公开项目使用**完全相同**的算法图配置 schema（`algorithmConfig.json`，含 `blit`、`face`、`nh_face_align`、`script` 节点）和相同的 `AmazingFeature` 运行时，详见第 9、10 节。（Effect House 一侧已核实；CapCut 一侧来自第三方再分发的资源，核查时未访问，未能核实）
   - Effect House 的 Face Info 节点输出 106 个关键点，与 SDK 中的 `bef_ai_face_106` 一致。
 
 ### 0.3 本次研究的工具限制
@@ -100,10 +101,10 @@
 
 ### 2.2 渲染句柄生命周期与调用顺序
 
-依据为头文件，以及两份第三方集成代码：
+依据为头文件，以及一份第三方集成代码和一份 BytePlus 官方 Demo。下面的序列是综合整理，不是任何一份代码的原样调用顺序：Agora 代码直接调用 `bef_effect_ai_*`，但没有调用 `use_pipeline_processor` 和 `composer_set_mode`（这两个函数只见于头文件）；BytePlus Demo 通过 `EffectManager` 封装调用，代码中看不到 `bef_*` 函数。
 
-- Agora `BEEffectManager.mm`：https://github.com/AgoraIO-Community/BeautyAPI/blob/main/iOS/BeautyAPI/ByteBeauty/BEEffectManager.mm
-- BytePlus 官方 Android Demo：https://github.com/byteplus-sdk/effects-sdk-android-camera/blob/main/app/src/main/java/com/bytedance/labcv/demo/CameraFragment.java
+- [第三方集成] Agora `BEEffectManager.mm`：https://github.com/AgoraIO-Community/BeautyAPI/blob/main/iOS/BeautyAPI/ByteBeauty/BEEffectManager.mm
+- [官方-代码] BytePlus 官方 Android Demo：https://github.com/byteplus-sdk/effects-sdk-android-camera/blob/main/app/src/main/java/com/bytedance/labcv/demo/CameraFragment.java
 
 ```
 [GL 线程, 有当前 EGL/EAGL context]
@@ -126,7 +127,7 @@ bef_effect_ai_set_camera_device_position(h, front/back)
 bef_effect_ai_algorithm_texture(h, srcTex, ts)                // 跑检测等算法
    (或 *_algorithm_texture_with_buffer / *_algorithm_buffer)
 bef_effect_ai_process_texture(h, srcTex, dstTex, ts)          // 渲染特效到 dstTex
-   (或 bef_effect_ai_process_buffer(... RGBA/BGRA/NV12/NV21/YUV420P ...))
+   (或 bef_effect_ai_process_buffer(... bef_ai_pixel_format ...)；头文件注释中 GRAY8/YUV420P/NV12/NV21 标为“目前还不支持”)
 [可选] bef_effect_ai_get_face_detect_result / _get_face_seg_result / _get_hand_detect_result /
        _get_skeleton_detect_result / _get_face_attr_detect_result
 bef_effect_ai_destroy(h)
@@ -141,14 +142,14 @@ bef_effect_ai_destroy(h)
   - 每帧先设宽高与方向，再调算法接口，最后 `process_texture`；
   - 输入与输出纹理宽高一致，且不能是同一张纹理；
   - `composer_set_nodes` 每次都要传入全部生效的素材；
-  - 强度默认是 0。
+  - 强度默认是 0。（未能核实）
 - BytePlus C API 文档（搜索摘要）：https://docs.byteplus.com/en/effects/docs/c-api
   - 旧接口 `bef_effect_ai_set_beauty`、`bef_effect_ai_set_reshape_face` 等只适用于 2.6 及更早版本；
   - 2.7 起统一改用 composer。
 
 ### 2.3 完整函数分组（摘自 `bef_effect_ai_api.h`）
 
-- **生命周期**：`bef_effect_ai_create`，`bef_effect_ai_destroy`，`bef_effect_ai_init`，`bef_effect_ai_init_with_assetmgr`，`bef_effect_ai_set_image_mode`，`bef_effect_available_features`，`bef_effect_ai_get_version`
+- **生命周期**：`bef_effect_ai_create`，`bef_effect_ai_destroy`，`bef_effect_ai_init`，`bef_effect_ai_init_with_assetmgr`，`bef_effect_ai_set_image_mode`，`bef_effect_available_features`；`bef_effect_ai_get_version` 不在 `bef_effect_ai_api.h` 中，而是在 `bef_effect_ai_version.h` 中声明
 - **环境与几何**：`bef_effect_ai_set_camera_device_position`，`bef_effect_ai_set_device_rotation(quaternion)`，`bef_effect_ai_set_width_height`，`bef_effect_ai_set_orientation`，`bef_effect_ai_set_render_api`，`bef_effect_ai_use_builtin_sensor`，`bef_effect_ai_ar_update_frame`（ARCore）
 - **旧版美颜接口（2.6 及以前）**：`bef_effect_ai_set_beauty`，`bef_effect_ai_set_buildin_makeup`，`bef_effect_ai_set_reshape_face`，`bef_effect_ai_update_reshape_face`，`bef_effect_ai_update_reshape_face_intensity(eye, cheek)`，`bef_effect_ai_set_intensity(type, v)`
   - 强度类型：`BEF_INTENSITY_TYPE_BEAUTY_WHITEN=1`，`_BEAUTY_SMOOTH=2`，`_FACE_SHAPE=3`（大眼/瘦脸），`_BEAUTY_SHARP=9`，`_GLOBAL_FILTER_V2=12`，`_BUILDIN_LIP=17`，`_BUILDIN_BLUSHER=18`
@@ -164,7 +165,7 @@ bef_effect_ai_destroy(h)
 
 ### 2.4 公共定义里能看出的内部组件名（`bef_effect_ai_public_define.h`）
 
-- **像素格式**：`BEF_AI_PIX_FMT_RGBA8888`, `BGRA8888`, `BGR888`, `RGB888`, `GRAY8`, `YUV420P`, `NV12`, `NV21`
+- **像素格式**：`BEF_AI_PIX_FMT_RGBA8888`, `BGRA8888`, `BGR888`, `RGB888`, `GRAY8`, `YUV420P`, `NV12`, `NV21`。其中 `GRAY8`、`YUV420P`、`NV12`、`NV21` 在该头文件注释中标为“目前还不支持”。
 - **旋转**：`BEF_AI_CLOCKWISE_ROTATE_0/90/180/270`。注释原文为“图像需要顺时针旋转 X 度，使图像中的人脸为正”。
 - **错误码暴露的内部模块（重要）**：
   - `BEF_RESULT_SMASH_E_*`（-101 至 -113）：算法库代号 **smash**。
@@ -181,7 +182,7 @@ bef_effect_ai_destroy(h)
 
 - 包含 `RENDER_MSG_TYPE_RESOURCE / _EFFECT / _ALGORITHM_CHANGE / _FACE_INFO / _STICKER_LOCATION / _ARSCAN* / _VRBRUSH* / _MEMOJI* / _GAME_*` 等消息类型。
 - 两条值得注意的注释：`RENDER_MSG_TYPE_GENERAL_AUDIO 0x3A // sdk --> VE` 和 `RENDER_MSG_TYPE_VE_AUDIO 0x3B // VE --> sdk`。
-- 这说明 Effect SDK 被设计为嵌入 **VE（Video Editor）SDK** 内运行，两者互发消息。这正是剪映、CapCut 的编辑引擎形态。
+- 这说明 Effect SDK 与 **VE（Video Editor）SDK** 之间有互发消息的约定。认为这正是剪映、CapCut 的编辑引擎形态，属于 [推断]。
 - 来源：[官方-代码] 与 2.1 相同的 Headers 目录。
 
 ### 2.6 RTC 封装层（`IVideoEffect`）：[官方-代码]
@@ -204,7 +205,7 @@ bef_effect_ai_destroy(h)
 
 **人像抠图 `bef_effect_ai_portrait_matting.h`**
 - 有 `BEF_MP_LARGE_MODEL` 和 `BEF_MP_SMALL_MODEL` 两档模型。
-- `BEF_MP_OutputMinSideLen` 默认值为 **128**，并且必须是 16 的倍数。也就是说 alpha 是低分辨率掩码，由调用方上采样。
+- `BEF_MP_OutputMinSideLen` 默认值为 **128**，并且必须是 16 的倍数。头文件注释说明输出短边固定为该值，长边按比例缩放并向上取整到 16 的倍数。由此推断 alpha 是低分辨率掩码，由调用方上采样（[推断]）。
 - 参数还有 `BEF_MP_EdgeMode` 和 `BEF_MP_FrashEvery`。
 
 **手部 `bef_effect_ai_hand.h`**
@@ -261,11 +262,11 @@ StickerResource.bundle/stickers/***
 火山引擎《素材包结构说明(v4.2.1及以上)》（搜索摘要）：https://volcengine.com/docs/6705/102039
 
 - 大部分素材都放在 `ComposeMakeup.bundle` 中，包括美颜、微整形、美体、美妆。
-- `beauty_Android_lite` 和 `beauty_IOS_lite` 提供美白、磨皮、锐化；“清晰”是后来加入的。
-- `reshape_v8_lite` 包含脸、眼、鼻、嘴的大部分小项。4.7.0 起又加入了瘦脸、小脸、窄脸、小头、V 脸。
-- 4.7.0 还新增了 `beauty_Android_rosy_lite`（红润）、`reshape_forehead`（发际线）、`body/allslim_prev`。
+- `beauty_Android_lite` 和 `beauty_IOS_lite` 提供美白、磨皮、锐化；“清晰”是后来加入的。BytePlus 同名文档（搜索摘要）写明“清晰”在 4.4.2 加入：https://docs.byteplus.com/effects/docs/resource-package-structure-v421-and-later
+- `reshape_v8_lite` 包含脸、眼、鼻、嘴的大部分小项。4.7.0 起又加入了瘦脸、小脸、窄脸、小头、V 脸。（具体版本号未能核实。火山引擎 6705/1521678 的搜索摘要只确认：4.7.1 起的映射表在 `reshape_v8_lite` 下列有瘦脸 `Face_ALL_*`、小脸 `Internal_Deform_Face`、窄脸 `Internal_Deform_CutFace`、小头 `BEF_BEAUTY_BODY_SHRINK_HEAD`、V 脸 `Internal_Deform_VFace`）
+- 4.7.0 还新增了 `beauty_Android_rosy_lite`（红润）、`reshape_forehead`（发际线）、`body/allslim_prev`。（未能核实）
 - 路径**必须指到** `.../ComposeMakeup.bundle/ComposeMakeup/beauty_Android_lite` 这一层。
-- 4.7.2 的“分级素材包”共 9 个：https://www.volcengine.com/docs/6705/1719096
+- 4.7.2 的“分级素材包”共 9 个：https://www.volcengine.com/docs/6705/1719096 （未能核实：该页面无法访问，搜索也没有收录此 ID；更新日志摘要只提到 4.7.2 有 B1–B3、A1–A3、P1–P5 等套餐）
 
 ### 3.2 已读取的 ModelResource 模型文件名
 
@@ -273,17 +274,17 @@ StickerResource.bundle/stickers/***
 
 | 目录 | 文件 |
 |---|---|
-| `ttfacemodel/` | `tt_face_v11.1.model`（106 点主模型），`tt_face_extra_v14.0.model`（240/280 二级关键点） |
+| `ttfacemodel/` | `tt_face_v11.1.model`（106 点主模型，用途为 [推断]），`tt_face_extra_v14.0.model`（240/280 二级关键点，用途为 [推断]；火山引擎更新日志摘要称移动端 V4.7.1 已把 240/280 点模型升到 V15，仓库中的 v14.0 较旧） |
 | `ttfaceattrmodel/` | `tt_face_attribute_v8.0.model`，`tt_face_attribute_tob_v7.0.model`，`tt_face_attribute_age_v2.0.model`，`tt_face_attribute_exp_v1.0.model`，`tt_face_attribute_extra_v3.0.model`，`tt_face_beauty_v5.0.model`，`tt_beauty_attr6_v2.0.model` |
 | `handmodel/` | `tt_hand_det_v11.0`，`tt_hand_box_reg_v12.0`，`tt_hand_gesture_v11.0`，`tt_hand_gesture_tob_v11.2`，`tt_hand_kp_v6.0`，`tt_hand_kp3d_v2.0`，`tt_hand_lr_v3.1`，`tt_hand_ring_v1.1`，`tt_hand_seg_v2.0`（均为 `.model`） |
 | `mattingmodel/` | `tt_matting_v15.0.model`，`tt_matting_large_v3.0.model`，`tt_matting_oproj_v1.0_nomal.model`，**`tt_matting_oproj_v1.0_coreml.model`** |
-| `mangamodel/` | `ap_manga_v1.0.model`，`ap_hmangakone_v1.5.model`，`ap_pixmangarDouble_v1.1.model`（漫画脸，基于 GAN 的道具） |
+| `mangamodel/` | `ap_manga_v1.0.model`，`ap_hmangakone_v1.5.model`，`ap_pixmangarDouble_v1.1.model`（漫画脸；“基于 GAN”为 [推断]） |
 | `avatar_drive/` | `tt_avatar_drive_v1.0.model` |
 
 模型命名有三个规律：
 
-- 统一使用 `tt_<任务>_<变体>_v<主.次>.model`。
-- 存在**同一个模型的多后端变体**，例如 `_coreml` 和 `_nomal`。这说明 iOS 上有 CoreML 后端。
+- 大多数使用 `tt_<任务>_<变体>_v<主.次>.model`，但并不统一：`mangamodel/` 下的三个模型用 `ap_` 前缀。
+- 存在**同一个模型的多后端变体**，例如 `_coreml` 和 `_nomal`。由此推断 iOS 上有 CoreML 后端（[推断]）。
 - 有 `_tob` 版本，即面向 B 端客户的版本。
 
 ### 3.3 美颜素材包内部结构
@@ -328,10 +329,11 @@ beauty_Android_lite/
 - 目录为 `FilterResource.bundle/Filter/Filter_06_03/`，内含 `config.json`（加密）和 `filter/filter.png`。
 - 作者解码了 `filter.png`：512×512 的 RGB 图，按 8×8 拼块排列，每块 64×64，即**标准的 GPUImage 式 64³ 3D LUT**。
   - 像素 (63,0) 为 R=255，(0,63) 为 G=255，(448,448) 为 B=255；
-  - 黑位被抬高到 (1,1,4)，这正是“蜜桃”滤镜的调色。
+  - 黑位 (0,0) 处为 (1,1,4)，即只有极轻微的抬升，(511,511) 为 (255,255,255)。`Filter_06_03` 对应“蜜桃”见下方 `EffectDataConfig.kt`；但仅凭这几个像素不足以描述该滤镜的调色特征，原文“这正是蜜桃滤镜的调色”的说法已删去。
 - 来源：[官方-代码] https://github.com/volcengine/VolcEngineRTC/tree/main/Android/APIExample/app/src/main/assets/cvlab/FilterResource.bundle/Filter/Filter_06_03/filter
 - 滤镜 ID 示例：`Filter_02_14`（奶油），`Filter_06_03`（蜜桃），`Filter_37_L5`（清透），`Filter_35_L3`（夜色），`Filter_30_Po8`（冷氧），`Filter_38_F1`（自然）……
-  - 来源：[官方-代码] BytePlus VideoOne 的 https://github.com/byteplus-sdk/VideoOneSolutions/blob/main/Client/Android/component/effectkit/src/main/kotlin/com/vertcdemo/effect/utils/EffectDataConfig.kt
+  - 来源：[官方-代码] BytePlus VideoOne 的 https://github.com/byteplus-sdk/VideoOneSolutions/blob/main/Client/Android/component/effectkit/src/main/kotlin/com/vertcdemo/effect/utils/EffectDataConfig.kt 只包含 `Filter_02_14`（`filter_cream`/奶油）、`Filter_06_03`（`filter_mitao`/蜜桃）、`Filter_38_F1`（`filter_ziran`/自然）等，**不包含** `Filter_37_L5`、`Filter_35_L3`、`Filter_30_Po8`。
+  - 后三者的出处是 [官方-代码] https://github.com/volcengine/VolcEngineRTC/blob/main/Windows/src/Advanced/ByteBeauty/ByteBeautyWidget.cpp ，其中的映射为 `kClearColorFIlter→Filter_37_L5`、`kNightColorFilter→Filter_35_L3`、`kColdOxygenColorFilter→Filter_30_Po8`、`kPeachColorFilter→Filter_06_03`。中文名“清透 / 夜色 / 冷氧”是按英文枚举名意译的。
 
 ### 3.5 贴纸 / 道具素材（“Feature 组合”格式）
 
@@ -395,7 +397,7 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
 | | `whiten` | 美白 | 同上 |
 | | `sharp` | 锐化 | 同上 |
 | | `clear` | 清晰 | 同上 |
-| `beauty_*_rosy_lite` | `rosy` | 美白-红润 | [官方] https://github.com/byteplus-sdk/BPLive_SPM（strings 文件） |
+| `beauty_*_rosy_lite` | `rosy` | 美白-红润 | [官方-代码] https://github.com/byteplus-sdk/BPLive_SPM 的 `Sources/BDLiveLiveStreamingCoreWrapper/Resources/BDLLanguageStreaming.bundle/zh-Hans.strings`（`"beauty_Android_rosy_lite_rosy" = "美白-红润"`） |
 | `beauty_4Items` | `BEF_BEAUTY_BRIGHTEN_EYE` | 亮眼 | [第三方集成] https://github.com/pili-engineering/PLMediaStreamingKit-ByteDance/blob/master/Document/ResourceTools/ResourceTool.py |
 | | `BEF_BEAUTY_WHITEN_TEETH` | 白牙 | 同上 |
 | | `BEF_BEAUTY_REMOVE_POUCH` | 黑眼圈 | 同上 |
@@ -416,7 +418,7 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
 | | `Internal_Deform_ZoomMouth` | 嘴型 | 同上 |
 | | `Internal_Deform_MouthCorner` | 微笑 | 同上 |
 | | `Internal_Deform_MovMouth` | 缩人中 | 同上 |
-| | `BEF_BEAUTY_BODY_SHRINK_HEAD` | 小头 | 同上 |
+| | `BEF_BEAUTY_BODY_SHRINK_HEAD` | 小头 | 只见于 `reshape_lite/.config_file`，ResourceTool.py 中没有；中文名“小头”见火山引擎 6705/1521678（搜索摘要） |
 | `reshape_v8_lite`（4.7.1 起） | `Face_ALL_boy`、`Face_ALL_girl`、`Face_ALL_nature` | 帅气 / 美丽 / 自然瘦脸预设 | [官方-文档] https://docs.byteplus.com/docs/effects/Beauty-and-Face-Shaping-Mapping-v471-and-later ；https://www.volcengine.com/docs/6705/1521678 |
 | `lip/…` | `Internal_Makeup_Lips` | 口红 | ResourceTool.py；BytePlus Demo |
 | `blush/…` | `Internal_Makeup_Blusher` | 腮红 | ResourceTool.py |
@@ -480,7 +482,9 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
   - `mask[256*256]`；
   - `warp_mat[6]`，即 2×3 仿射矩阵。
 
-  这说明**掩码在对齐后的人脸裁剪空间中计算，再用仿射矩阵映射回原图**。这一点由结构体直接看出。嘴唇、牙齿、面部分割都依赖 280 点。
+  这说明**掩码在对齐后的人脸裁剪空间中计算，再用仿射矩阵映射回原图**。这一点由结构体直接看出。
+  - “嘴唇、牙齿、面部分割都基于 280 点”不是结构体能看出的，出处是火山引擎产品功能文档（搜索摘要）：“基于人脸280关键点，可对人脸进行嘴唇、牙齿和面部分割”，https://docs.volcengine.com/docs/Intelligentbeautificationeffects/iOS?lang=zh 。
+  - 头文件中可见的是：`AI_MOUTH_MASK_DETECT`/`AI_TEETH_MASK_DETECT` 的值为 `0x300`，`AI_FACE_MASK_DETECT` 为 `0x500`，二者都包含二级关键点位 `TT_MOBILE_FACE_240_DETECT`（`0x100`）。
 - **强制检测**：`TT_MOBILE_FORCE_DETECT`。
 
 ### 5.3 运行参数 `bef_face_detect_type`
@@ -506,7 +510,8 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
   - 手势不到 6 ms；
   - 3D face mesh 不到 5 ms、内存不到 42 MB。
   - 页面：https://www.volcengine.com/docs/6705/102020 ，https://docs.byteplus.com/en/docs/effects/docs-3d-face-mesh-algorithm
-- 官方说明耗时主要取决于输入分辨率和开启功能的数量：https://www.volcengine.com/docs/6705/101955
+- 官方说明耗时主要取决于输入分辨率和开启功能的数量：https://www.volcengine.com/docs/6705/101955 （未能核实）
+- 核查补充：人体分割 <11 ms 见火山引擎 6705/102020；3D face mesh <5 ms、<42 MB 的测试机是 **OPPO R11**，骨骼和手势 <6 ms 的测试机是 iPhone 7（均为 BytePlus 文档搜索摘要）。BytePlus 的 Smart Vision Enhance 页面给出完全相同的 42 MB / 5 ms 数字，可能是文档间复制，引用时需谨慎。
 
 ### 5.5 3D 人脸拟合 `bef_effect_ai_facefitting.h`：[官方-代码]
 
@@ -551,7 +556,7 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
 
 - **Face Info** 节点输出“An array of 106 facial keypoints”，即 2D Keypoints；同时输出 Rotation（Vec3）、Rect、Center Position，坐标为归一化值。
   - https://effecthouse.tiktok.com/learn/guides/visual-scripting/nodes/head-and-face/face-info
-- 3D Face 使用 `adjustedGeo_quads_01.fbx` 网格加 `face_uv.png`。修改时**不能改变顶点 ID**，最多 5 张脸。
+- 3D Face 使用 `adjustedGeo_quads_01.fbx` 网格加 `face_uv.png`。修改时**不能改变顶点 ID**，最多 5 张脸（“最多 5 张脸”未能核实）。
   - https://effecthouse.tiktok.com/learn/guides/workspace/assets/downloadable-assets/3d-face
 
 ---
@@ -580,10 +585,10 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
    - Dark Circles；
    - Smile Lines。
 
-   这与 SDK 的 `beauty_4Items` 中 `BRIGHTEN_EYE`、`REMOVE_POUCH`、`SMILES_FOLDS` 一一对应。
+   这与 SDK 的 `beauty_4Items` 中 `BRIGHTEN_EYE`、`REMOVE_POUCH`、`SMILES_FOLDS` 一一对应。（对应关系为 [推断]，官方没有说明两者同源）
    - [官方-文档] https://effecthouse.tiktok.com/learn/guides/workspace/objects/face-effects/face-retouch ；https://effecthouse.tiktok.com/latest/release-notes-latest
-6. CapCut 桌面版资源中有 `DefaultAdjustBundle/yunfu_npu`（匀肤）。其中的模型为：
-   - `jypc_yunfuhua_gpucpu`（jy = 剪映，pc = 桌面端）
+6. CapCut 桌面版资源中有 `DefaultAdjustBundle/yunfu_npu`（匀肤）。（本条来自第三方再分发的 CapCut 资源，核查时未访问，未能核实；不应列在“已确认的事实”中）其中的模型为：
+   - `jypc_yunfuhua_gpucpu`（“jy = 剪映，pc = 桌面端”为 [推断]）
    - `jypc_yunfuhua_ocl`（OpenCL 变体）
    - `tt_fsnew_base_jianying`（剪映专用人脸基础模型）
    - `tt_freid`（人脸重识别）
@@ -622,10 +627,10 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
 - **微整形 key 很细**，共 16 项以上，见第 4 节。v8 版素材叫 `reshape_v8_lite`。
 - Effect House 发布说明：“Upgraded the Face Reshape object with the V8 deformation engine to correct background distortion and minimize its visibility”。
   - [官方-文档] https://effecthouse.tiktok.com/latest/release-notes-latest
-  - 这里的“**V8 deformation engine**”与 SDK 素材名 `reshape_v8_lite` 同代号。由此可确认 TikTok 和 SDK 共用变形引擎。
+  - 这里的“**V8 deformation engine**”与 SDK 素材名 `reshape_v8_lite` 同代号。由此推测 TikTok 和 SDK 共用变形引擎；这只是名称一致，官方没有说明，属于 [推断]，不能算“确认”。
 - 素材内部结构（[官方-代码]，见 3.3）：
   - `reshape_lite/GE_Mesh_SmallHead/generalEffect`：以 Mesh 实现的 GeneralEffect，即小头效果；
-  - `distortionFaceu_test/represent_Plasticine*.txt`：一种“橡皮泥”式变形表示，名字中的 Faceu 指 FaceU 激萌 App；
+  - `distortionFaceu_test/represent_Plasticine*.txt`：一种“橡皮泥”式变形表示，名字中的 Faceu 可能指 FaceU 激萌 App（[推断]）；
   - 贴纸中有 `FaceDistortionV2_*` 和 `FaceStretch_*` 两种 Feature。
 - **Effect House Face Stretch**：
   - 在场景面板中拖动 2D 关键点；参数有 Intensity（默认 50）、Symmetric（默认开启）、Lock。
@@ -633,9 +638,9 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
   - 页面：https://effecthouse.tiktok.com/learn/guides/technical-guides/objects/face-effects/face-stretch ，https://effecthouse.tiktok.com/learn/guides/visual-scripting/nodes/head-and-face/set-face-stretch
 - **Effect House Face Liquify / Liquify 组件**：参数有 Symmetry、Radius、Intensity X/Y、Liquify Area，可用于脸部和身体。
   - https://effecthouse.tiktok.com/learn/guides/workspace/components/utility/liquify
-- **3D Face Warp**：7 类共 66 个参数，覆盖头脸比例、眉、眼、鼻、嘴、下颌、脸型。
-  - https://effecthouse.tiktok.com/learn/guides/face-effects/3d-face/
-- 剪映的“美型”有**单人模式和全局模式**（[媒体] 用户教程摘要）。CapCut 美颜包的算法图中有 `freid`（人脸重识别）节点。因此**单人模式**依赖跨帧、跨片段的人脸身份追踪，这一点为 [推断]。
+- **3D Face Warp**：带有 Face Warp 组件，用滑杆调整头型、眼、鼻、嘴等，共 66 项调节。（“7 类”的分类未能核实）
+  - 原链接 https://effecthouse.tiktok.com/learn/guides/face-effects/3d-face/ 是 3D Face 页面，不是 3D Face Warp。正确页面（搜索摘要）：https://effecthouse.tiktok.com/learn/guides/workspace/objects/face-effects/3d-face-warp
+- 剪映的“美型”有**单人模式和全局模式**（[媒体] 用户教程摘要，未给出处，未能核实）。CapCut 美颜包的算法图中有 `freid`（人脸重识别）节点（来自第三方再分发资源，未能核实）。因此**单人模式**依赖跨帧、跨片段的人脸身份追踪，这一点为 [推断]。
 
 ### 7.2 推断的变形管线
 
@@ -673,12 +678,12 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
   - 纹理为 PNG 或 JPG，最大 1024×1024。
   - v2.1 起提供 `face_mask_2.1+.zip` 模板，包含 Whole face、Eyes、Eyelashes、Lips、Teeth。
   - 页面：https://effecthouse.tiktok.com/learn/guides/workspace/objects/face-effects/face-mask ，https://effecthouse.tiktok.com/learn/guides/workspace/assets/downloadable-assets/2d-face-mask
-- Effect House 的 Segmentation Texture 新增了 **Face** 类型，用于在手指遮挡时不把妆画到手上。其他类型还有 Portrait、Hair、Head、Hand、Clothing、Skin、Eye、Ear、Lip、Teeth、Pet、Sky、Ground、Building 等。
+- Effect House 的 Segmentation Texture 新增了 **Face** 类型，用于在手指遮挡时不把妆画到手上（Face 类型存在已核实；“用于手指遮挡”的用途说明未能核实）。其他类型还有 Portrait、Hair、Head、Hand、Clothing、Skin、Eye、Ear、Lip、Teeth、Pet、Sky、Ground、Building 等。
   - https://effecthouse.tiktok.com/learn/guides/technical-guides/assets/texture/segmentation-texture
 - SDK 头文件提供嘴唇、牙齿和面部掩码，均为 256² 加仿射矩阵；还有 `visibility_array`（点级遮挡）和 `skin_segmentation`。
-- Makeup Palette 模板使用 PBR 参数 Metallic（光泽）和 Roughness（哑光）。
+- Makeup Palette 模板使用 PBR 参数 Metallic（光泽）和 Roughness（哑光）。（未能核实）
   - https://effecthouse.tiktok.com/learn/guides/tutorials/template-tutorials/makeup-palette
-- 性能提示：美瞳颜色开销最高，其次是睫毛、Face Mask、Eye Effect；建议同时使用的脸部效果不超过 5 个。
+- 性能提示：美瞳颜色开销最高，其次是睫毛、Face Mask、Eye Effect；建议同时使用的脸部效果不超过 5 个（“不超过 5 个”未能核实）。
   - https://effecthouse.tiktok.com/learn/guides/getting-started/technical-guidelines/technical-optimization
 
 ### 8.2 推断的妆容管线
@@ -701,9 +706,10 @@ stickers/matting_bg/  → GE/ + config.json + event.lua               (抠图背
 
 - `const Amaz = effect.Amaz;`
   - https://github.com/ArmandoPalermo/EffectHouse-Projects
-- `Amaz.AmazingManager.getSingleton('BuiltinObject').getInputTextureWidth()`，以及 `getSingleton('Algorithm')`、`'Input'`、`'ARPlatform'`
-  - https://github.com/lafiosca/effect-house-screen-tap-test
-  - https://github.com/ciiindyxuu/ARFilters
+- `Amaz.AmazingManager.getSingleton('BuiltinObject').getInputTextureWidth()`，以及 `getSingleton('Algorithm')`
+  - https://github.com/lafiosca/effect-house-screen-tap-test （有 `getSingleton('BuiltinObject')`）
+  - https://github.com/ciiindyxuu/ARFilters （有 `getSingleton('BuiltinObject').getInputTextureWidth()`）
+  - 原文还列了 `'Input'`、`'ARPlatform'` 两个 singleton，核查时在所列仓库中没有找到，已删去。
 - `APJS.AmazingManager.getSingleton('Algorithm').getAEAlgorithmResult().getFaceBaseInfo(i)`
   - https://github.com/shidec/Boucing-Ball-TikTok
 - `const APJS = require('./amazingpro')`
@@ -757,7 +763,7 @@ Shocked.algo.folder/
 
 ### 9.3 场景与 ECS
 
-**`sticker.config`**：[公开镜像-非官方]，取自 CapCut 的 yunfu_npu 包
+**`sticker.config`**：[公开镜像-非官方]，取自 CapCut 的 yunfu_npu 包（本小节的 CapCut 内容核查时未访问，未能核实）
 
 ```json
 {"dev_version":"12.0.0","min_version":"10.62.0","type":"amazing",
@@ -781,10 +787,10 @@ Shocked.algo.folder/
 ### 9.4 旧版抖音特效创作工具
 
 - **像塑**（原名“特效君”）是抖音特效的创作与发布 App。
-- 特效师通常先用 PS 或 AE 出图，再用 **Effect Creator** 合成并导出，最后上传。
-- 来源：[媒体] https://apps.apple.com/cn/app/%E7%89%B9%E6%95%88%E5%90%9B-%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E5%88%9B%E6%84%8F/id1441942700 ，https://www.digitaling.com/articles/215823.html
+- 特效师通常先用 PS 或 AE 出图，再用 **Effect Creator** 合成并导出，最后上传。（未能核实：digitaling 页面无法访问，搜索也没有确认 Effect Creator 与像塑的对应关系）
+- 来源：[媒体] https://apps.apple.com/cn/app/%E7%89%B9%E6%95%88%E5%90%9B-%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E5%88%9B%E6%84%8F/id1441942700 （搜索摘要确认：开发者为北京抖音科技有限公司，“像塑，原名「特效君」，是抖音特效的创作与交流平台”），https://www.digitaling.com/articles/215823.html
 - 第 3.5 节的 Feature 式贴纸目录（`2DStickerV3`、`FaceMakeupV2` 等，加上 `event.lua` 和 `trigger.json`）属于这一代格式（[推断]）。
-- CapCut 配置中的 `"ae_tool":"AmazingEditor"` 说明内部还有一个名为 **AmazingEditor** 的编辑器，与 Effect House 的关系未知。
+- CapCut 配置中的 `"ae_tool":"AmazingEditor"` 说明内部还有一个名为 **AmazingEditor** 的编辑器，与 Effect House 的关系未知。（未能核实）
 
 ---
 
@@ -793,6 +799,7 @@ Shocked.algo.folder/
 > 来源说明：GitHub 上有第三方未经授权上传了 Windows 上 `AppData/Local/CapCut/User Data/Resources/` 目录的内容（CapCut 桌面版本地下发的资源）。因为是对专有文件的再分发，本报告不转引其链接，相关结论的可信度也低于官方资料。
 > 作者**只读取了目录名和明文 JSON**，没有解密任何文件，也没有使用任何反编译代码。
 > GitHub 上另有反编译的 TikTok 源码仓库，作者刻意**没有使用**。
+> **核查说明**：本节全部内容依赖第三方再分发的 CapCut 专有文件。核查时按规则没有访问这类仓库，因此本节（含 10.1–10.4）全部视为（未能核实），不能当作已确认事实引用。
 
 ### 10.1 目录结构
 
@@ -855,9 +862,9 @@ blit_0 (缩放到 360×640) ─┬─► face_0 (type "face", face_base_model_ke
 
 - **错误码中的推理与图像库**：`ESPRESSO`（推理框架）、`MOBILECV`（图像库）、`SMASH`（算法 SDK）。[官方-代码]
 - **ByteNN**：字节跳动的端侧推理框架。
-  - 有一个公开演讲：QCon 上海 2021《字节跳动ByteNN端智能业务落地背后的技术挑战》。作者只找到第三方整理的引用：https://github.com/gatieme/LDD-LinuxDeviceDrivers/blob/master/study/ai/TRANSFORMER.MD
-  - 火山引擎 Maven 仓库中有 `VolcEngineRTC-bytenn` 组件：https://artifact.bytedance.com/repository/Volcengine/com/volcengine/VolcEngineRTC-bytenn/3.56.1.508200/VolcEngineRTC-bytenn-3.56.1.508200.pom
-  - ByteDance gsdk 下有 `com.bytedance.gsdk.transplanted:bytenn`：https://mvnrepository.com/artifact/com.bytedance.gsdk.transplanted/bytenn/2.10.26-f6f9804f
+  - 有一个公开演讲：QCon 上海 2021《字节跳动ByteNN端智能业务落地背后的技术挑战》。作者只找到第三方整理的引用：https://github.com/gatieme/LDD-LinuxDeviceDrivers/blob/master/study/ai/TRANSFORMER.MD （核查：该文件第 303 行确有此条，指向 book118 上的 PDF 和极客时间课程页；QCon 官方议程未找到）
+  - 火山引擎 Maven 仓库中有 `VolcEngineRTC-bytenn` 组件：https://artifact.bytedance.com/repository/Volcengine/com/volcengine/VolcEngineRTC-bytenn/3.56.1.508200/VolcEngineRTC-bytenn-3.56.1.508200.pom （未能核实：主机不可达，搜索无结果）
+  - ByteDance gsdk 下有 `com.bytedance.gsdk.transplanted:bytenn`：https://mvnrepository.com/artifact/com.bytedance.gsdk.transplanted/bytenn/2.10.26-f6f9804f （未能核实：主机不可达，搜索只找到同一 `*.gsdk.transplanted` 系列的其他组件）
   - **ByteNN 的具体架构、后端和算子没有找到官方公开文档。**
 - **多后端证据**：
   - 模型文件有 `_coreml` 后缀（[官方-代码]）；
@@ -893,7 +900,8 @@ blit_0 (缩放到 360×640) ─┬─► face_0 (type "face", face_base_model_ke
   - V4.4.1 增加了设备 ID 加包名的双重校验，V4.6.0 支持设备 SN：https://docs.volcengine.com/docs/Intelligentbeautificationeffects/Updatelog
 - **授权粒度**：可按功能授权（`bef_ai_license_function_type`），并提供 `bef_effect_ai_check_license_function`。每个算法句柄都有自己的 `*_check_license`。
 - **版本一致性**：License 和素材必须与 SDK 版本一致。证书目录中的包名必须与工程包名一致。
-  - https://www.volcengine.com/docs/6348/114717
+  - https://www.volcengine.com/docs/6348/114717 （该 URL 未能核实，搜索没有收录此 ID）
+  - 内容本身有官方出处（搜索摘要）：智能美化特效《特效相关》FAQ 写明 License、素材须与 SDK 版本完全一致，证书包名须与项目包名 / bundle Identifier 一致，测试版和正式版不可混用：https://docs.volcengine.com/docs/Intelligentbeautificationeffects/Effectsrelated?lang=zh
 - 素材文件采用 `&^#.enc` 头的加密格式（[官方-代码] 观察所得），用于保护素材知识产权。
 
 ---
@@ -903,7 +911,7 @@ blit_0 (缩放到 360×640) ─┬─► face_0 (type "face", face_base_model_ke
 | 仓库 | 性质 | 内容 |
 |---|---|---|
 | https://github.com/volcengine/VolcEngineRTC | 官方 | 含 Effect SDK 全量头文件（`iOS/script/Depends/BytedEffectSDK/effect-sdk.framework/Headers`）、`cvlab` 素材（ComposeMakeup / Filter / Sticker / Model）、Android / iOS / Windows 的美颜示例（`ByteBeautyActivity.java`、`VolcBeautyViewController.swift`、`ByteBeautyWidget.cpp`）、`IVideoEffect` 头文件 |
-| https://github.com/byteplus-sdk/effects-sdk-android-camera | 官方（已归档） | Camera2 + GLSurfaceView + EffectManager 最小示例：OES 转 2D 纹理，再 `process`，再上屏 |
+| https://github.com/byteplus-sdk/effects-sdk-android-camera | 官方（2026-01-09 已归档，只读） | Camera2 + GLSurfaceView + EffectManager 最小示例：OES 转 2D 纹理，再 `process`，再上屏 |
 | https://github.com/byteplus-sdk/VideoOneSolutions | 官方 | effectkit：节点 `beauty_Android_lite`、`whiten_clear_Android_lite`、`sharpen_Android_lite`、`reshape_v8_lite`，以及滤镜和贴纸 ID |
 | https://github.com/volcengine/volcengine-specs | 官方 CocoaPods 源 | `EffectSDK_iOS_TOB`、`TTVideoEditor`、`NLEPlatform`、`DVETrackKit`、`EffectOneKit`、`veVOS` 等的 podspec（可看依赖关系） |
 | https://github.com/AgoraIO-Community/BeautyAPI | 第三方 | ByteDance 美颜接入代码（`BEEffectManager.mm` 等），完整展示 init 和 process 序列 |
@@ -917,7 +925,7 @@ blit_0 (缩放到 360×640) ─┬─► face_0 (type "face", face_base_model_ke
 1. **磨皮（保边平滑）**
    - 常用双边滤波、Guided Filter（O(1)，基于局部均值和方差，详见 https://people.csail.mit.edu/kaiming/publications/pami12guidedfilter.pdf ）、表面模糊，或“高反差保留”式的高低频分离。
    - 移动端一般在下采样图上做分离 box 滤波，再与原图按皮肤掩码混合，并回加部分高频，以保留毛孔，避免“塑料感”。
-   - 近年也有用小型 CNN 或 GAN 做去瑕疵与匀肤的做法。CapCut 的 `face_gan` 和 `yunfuhua` 模型即属此类（见第 10 节）。
+   - 近年也有用小型 CNN 或 GAN 做去瑕疵与匀肤的做法。CapCut 的 `face_gan` 和 `yunfuhua` 模型即属此类（见第 10 节；未能核实）。
 2. **美白、调色**
    - 1D 曲线或 3D LUT（64³ 打包成 512²，或 17³、33³）。在片元着色器中用三线性或双块插值查表。
    - 参考：https://github.com/theomission/glsl-lut ，https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter24.html
@@ -943,3 +951,87 @@ blit_0 (缩放到 360×640) ─┬─► face_0 (type "face", face_base_model_ke
 - “V8 deformation engine”的算法细节，以及 `represent_Plasticine` 表示的含义，均未公开。
 - `docs.byteplus.com` 和 `volcengine.com` 的文档正文是通过搜索摘要获得的，引用前建议人工打开原页面核对版本，因为 v4.2.1、v4.7.x、v4.8.0 之间差异较大。
 - 没有找到明确署名字节跳动、且可直接对应产品功能的人脸关键点、美型或磨皮论文。检索到的相关论文均来自其他机构。
+
+---
+
+## 核查记录
+
+> 核查日期：2026-10-15。方法：GitHub 原始文件用 raw.githubusercontent.com 逐字读取；目录结构用 `git clone --filter=blob:none --no-checkout` 后 `git ls-tree` 列出；图片用 PIL 读取尺寸和像素值。volcengine.com、docs.byteplus.com、effecthouse.tiktok.com、arxiv.org、qbitai.com、dice.com 等在本环境不可达（DNS 失败或代理拒绝），这些条目依据 WebSearch 摘要核对，均标为“搜索摘要”。没有访问任何再分发 CapCut 文件的仓库，没有调用 CapCut / 字节跳动生产接口。
+
+### 已核实（无需修改）
+
+| # | 断言 | 核查依据 |
+|---|---|---|
+| 1 | Effect SDK Headers 目录的头文件清单（2.1 表格） | WebFetch 读取 GitHub 目录页，61 个文件与表格一致 |
+| 2 | `composer_set_mode` 注释“0: A槽区+B槽区模式（Composer Feature）, 1: A槽区+B槽区+C槽区模式（Composer下沉）”，`orderType 0: 按照zorder排序` | `bef_effect_ai_api.h` 第 234–235 行 |
+| 3 | 强度类型 WHITEN=1、SMOOTH=2、FACE_SHAPE=3、SHARP=9、GLOBAL_FILTER_V2=12、BUILDIN_LIP=17、BUILDIN_BLUSHER=18 | `bef_effect_ai_public_define.h` 第 6–13 行 |
+| 4 | 错误码：SMASH -101..-113、ESPRESSO -105、MOBILECV -106、授权 -114..-129、GL_ERROR_OCCUR -150、BACH -153..-161、画质 -64..-73；`IES_RESULT_SUC` 注释 | `bef_effect_ai_public_define.h`、`bef_effect_ai_api.h` |
+| 5 | `ALGORITHM_DETECT_MIN_SIZE 720`、`EFFECT_HAND_DETECT_DELAY_FRAME_COUNT 4`、`BEF_EFFECT_MESSAGE_TRIGGER_CAPUTURE_IMAGE 2200`、License 功能枚举 | 同上 |
+| 6 | `RENDER_MSG_TYPE_GENERAL_AUDIO 0x3A // sdk --> VE`、`RENDER_MSG_TYPE_VE_AUDIO 0x3B // VE --> sdk` | `bef_effect_ai_message_define.h` 第 47–48 行 |
+| 7 | 106 点结构体字段；280 点 22/13/64/20；“现在改了二级策略”注释；检测间隔默认 24（无脸 8）；最大人脸默认 5、上限 10；检测级别 4–10；去抖 1–30；掩码 256×256 + `warp_mat[6]` | `bef_effect_ai_face_detect.h` |
+| 8 | 手部 22 点 + 扩展 2 点；48 个静态手势宏；`TIME_ELAPSED_THRESHOLD` 默认 20ms；骨骼 18 点、最多 2 人；抠图 `OutputMinSideLen` 默认 128 且为 16 的倍数；皮肤分割 `tt_skin_seg`；头部分割基于 106 点 | 对应头文件 |
+| 9 | 3D 拟合 `param` 注释、`rvec/tvec` 为“opencv solvepnp 输出”、`landmark_triangle`、求解参数名；属性模块身份属性默认每 12 帧 | `bef_effect_ai_facefitting.h`、`bef_effect_ai_face_attribute.h` |
+| 10 | `LicenseProvider` 的 OFFLINE/ONLINE/ACCOUNT 三种模式；`CVLensEngine.h` 的命名空间、工厂、接口方法与 `LensUtils` | `bef_effect_ai_license_wrapper.h`、`CVLensEngine.h` |
+| 11 | RTC `IVideoEffect` 方法与“鉴权时会检查 CV 服务端时间和本地设备的时间差异”注释；`ByteBeautyActivity.java` 的 set 全量列表逻辑 | `bytertc_video_effect_interface.h` 第 318 行；`ByteBeautyActivity.java` 第 325–383 行 |
+| 12 | ModelResource.bundle 的 26 个模型文件名 | `git ls-tree` |
+| 13 | `beauty_Android_lite` 与 `reshape_lite` 的目录结构；`.config_file` 明文内容；`&^#.enc` 文件头；faceMask 350×550 RGB、foundation_filter 512×512 RGBA、contrast 289×17 | `git ls-tree` + raw 下载 |
+| 14 | `Filter_06_03/filter/filter.png` 为 512×512 RGB，(63,0)=R255，(0,63)=G255，(448,448)=B255 | PIL 读像素 |
+| 15 | 贴纸 `manhualian`、`meihouwang`、`animoji_keaizhu`、`matting_bg` 的目录结构 | `git ls-tree` |
+| 16 | `NLEPlatform 0.7.6` 依赖 `TTVideoEditor >=9.x`；`EffectSDK_iOS_TOB 11.6.0-VE` 的描述原文、链接 JavaScriptCore、弱链接 Metal/MPS/CoreML；`11.6.0-VE-LENS` 存在 | volcengine-specs 原始 podspec 与目录 |
+| 17 | BytePlus Demo `CameraFragment.java` 中的 `setComposeNodes`/`updateComposerNodeIntensity`/`setSticker`/`setFilter` 代码；Agora `BytesBeautyRender.m` 的 `/beauty_IOS_lite`、`/reshape_lite` 调用 | 原始文件 |
+| 18 | 七牛 `ResourceTool.py` 的 `key_name_dict` 中英对照；`PLShortVideoKit-ByteDance.md` 目录树 | 原始文件 |
+| 19 | VideoOne `EffectDataConfig.kt` 的节点 `beauty_Android_lite`、`whiten_clear_Android_lite`、`sharpen_Android_lite`、`reshape_v8_lite` | 原始文件第 13–16 行 |
+| 20 | Effect House `Shocked.algo.folder/algorithmConfig.json` 的节点、`model_names`、links，以及 `shockeyes.js` 的 `dynamicSetAlgorithmEnable` 和算法列表 | 原始文件 |
+| 21 | `const Amaz = effect.Amaz`、`require('./amazingpro')`、`getAEAlgorithmResult().getFaceBaseInfo`、`overwriteBuiltinFilter: true` / `overwriteBuiltinMakeup: false` | 所列 5 个 Effect House 项目仓库 |
+| 22 | BytePlus VE SDK 为字节自研，用于 TikTok、抖音、CapCut 等，可配合 Effects SDK | BytePlus product-overview（搜索摘要） |
+| 23 | 火山引擎 2021-07-28 开放抖音同款特效；人脸关键点本地检测、数据不上传 | 每日经济新闻、凤凰网（搜索摘要） |
+| 24 | 量子位：抖音未用 Unity/虚幻、自研轻量渲染引擎（2021/08/27072）；内部生产工具与 SDK 底层同一套引擎（2021/06/25097《抖音秘籍，对外开放》） | 搜索摘要 |
+| 25 | TikTok 职位描述中的 “We own the Effect SDK powering TikTok's camera and creation experience”、self-developed rendering engine、camera→effect→render→encode、OpenGL ES / Metal / Vulkan | 搜索摘要（dice、lifeattiktok、themuse） |
+| 26 | Effect House：Face Info 输出 106 点；Set Face Stretch 96 点；Face Stretch Intensity 默认 50、Symmetric 默认开启；Liquify 参数；V8 deformation engine 发布说明；Face Retouch 四项属性及前身 Skin Smoothing；Face Mask 最大 1024×1024；3D Face 的 fbx/png 与顶点 ID 规则；APJS 组件写法 | effecthouse.tiktok.com（搜索摘要） |
+| 27 | BytePlus 人脸检测 <2ms（iPhone 7）、<4MB（OPPO R11）、yaw/pitch ±90°、最多 10 张脸、短边 ≥128 | BytePlus docs-portrait-sdk（搜索摘要） |
+| 28 | C API 旧接口只适用于 2.6 及以前，2.7 起用 composer | BytePlus docs-c-api（搜索摘要） |
+| 29 | 离线 licbag 校验包名和有效期、测试可用预设包名；PC 在线授权流程；V4.4.1 设备 ID + 包名双重校验、V4.6.0 支持设备 SN | 火山引擎 6705/101956、6705/102012、更新日志（搜索摘要） |
+| 30 | *Parametric Reshaping of Portraits in Videos*：Tang、Yang、Sun、Jin，ACM MM 2021，arXiv 2205.02538，巴斯大学与浙江大学 | arXiv 列表与巴斯大学研究门户（搜索摘要） |
+| 31 | `effects-sdk-android-camera` 已归档，README 要求把 bundle ID 发给 BytePlus | WebFetch GitHub 仓库页 |
+
+### 已修正
+
+1. **滤镜 ID 来源（3.4）**：`EffectDataConfig.kt` 中没有 `Filter_37_L5`、`Filter_35_L3`、`Filter_30_Po8`。这三个 ID 来自 VolcEngineRTC 的 `Windows/src/Advanced/ByteBeauty/ByteBeautyWidget.cpp`，已改正出处。
+2. **“这正是蜜桃滤镜的调色”（3.4）**：(1,1,4) 的黑位抬升极小，这几个像素不能说明调色特征，已删去这一说法。
+3. **模型命名“统一使用 tt_ 前缀”（3.2）**：`mangamodel/` 下三个模型用 `ap_` 前缀，已改为“大多数”。
+4. **3D Face Warp 链接（7.1）**：原链接是 3D Face 页面，已改为 `.../workspace/objects/face-effects/3d-face-warp`。“66 项调节”已核实，“7 类”未能核实。
+5. **`getSingleton('Input')`、`getSingleton('ARPlatform')`（9.1）**：在所列仓库中没有找到，已删去。
+6. **`bef_effect_ai_get_version`（2.3）**：它在 `bef_effect_ai_version.h` 中声明，不在 `bef_effect_ai_api.h` 中，已注明。
+7. **像素格式（2.2、2.4）**：头文件注释把 GRAY8、YUV420P、NV12、NV21 标为“目前还不支持”，已补充说明。
+8. **“嘴唇、牙齿、面部分割都依赖 280 点”（5.2）**：结构体看不出这一点，出处改为火山引擎产品功能文档（搜索摘要），并补充了掩码配置位包含 `0x100` 的事实。
+9. **2.2 调用序列的出处**：原文说“两份第三方集成代码”，其中 BytePlus Demo 是官方代码，且只通过 `EffectManager` 调用。已改正，并说明该序列是综合整理的结果。
+10. **`BEF_BEAUTY_BODY_SHRINK_HEAD` 出处（4.2）**：它只出现在 `.config_file` 中，ResourceTool.py 里没有，已改正。
+11. **BPLive_SPM 出处（4.2）**：已补上具体文件路径，标记从 [官方] 规范为 [官方-代码]。
+12. **3D face mesh 性能数据（5.4）**：补充说明测试机是 OPPO R11，并提示 BytePlus 文档中可能有复制的数字。
+13. **“清晰”加入的版本（3.1）**：补充 BytePlus 文档给出的 4.4.2。
+14. **图例**：补充 [公开项目] 标记的定义（原文已在使用但图例中没有）。
+
+### 降级为 [推断]
+
+- “V8 deformation engine 与 `reshape_v8_lite` 同代号，由此可确认共用引擎”：改为 [推断]。
+- Face Retouch 与 `beauty_4Items` 的一一对应、“Faceu 指 FaceU 激萌”、“`_coreml` 说明 iOS 有 CoreML 后端”、“漫画脸基于 GAN”、“alpha 是低分辨率掩码”、“VE 消息即剪映 / CapCut 编辑引擎形态”、`tt_face_v11.1` / `tt_face_extra_v14.0` 的用途、“jy = 剪映，pc = 桌面端”：均标为 [推断]。
+
+### 标为（未能核实）
+
+- 第 10 节全部内容，以及 0.2、6.1 第 6 条、7.1、9.3、9.4、14 中依赖 CapCut 再分发资源的内容（`yunfu_npu`、`sticker.config`、`AmazingEditor`、`freid`、`face_gan` 等）。按规则没有访问这类仓库。
+- 火山引擎 6705/1719096（4.7.2 分级素材包 9 个）、6348/114717 两个 URL；后者的内容已补上可核实的官方出处。
+- “4.7.0 起加入瘦脸 / 小脸 / 窄脸 / 小头 / V 脸”的版本号，以及 4.7.0 新增 `rosy`、`reshape_forehead`、`body/allslim_prev`。
+- C 接口文档中的“强度默认是 0”；6705/101955 中“耗时取决于分辨率和功能数”的说法。
+- ByteNN 的两个 Maven URL（主机不可达，搜索无结果）；QCon 演讲只找到第三方引用，没有找到官方议程。
+- Effect Creator 的工作流描述；剪映“单人 / 全局模式”（未给出处）；Effect House 3D Face“最多 5 张脸”、Makeup Palette 的 PBR 参数、“脸部效果不超过 5 个”、Segmentation 中 Face 类型“用于手指遮挡”的用途。
+
+### 删除
+
+- 3.4 中“这正是‘蜜桃’滤镜的调色”的结论。
+- 9.1 中 `'Input'`、`'ARPlatform'` 两个 singleton 名称。
+- 7.1 中错误的 3D Face Warp 链接（已换成正确链接）。
+
+### 未检查的部分
+
+- 第 6.2、7.2、14 节的通用算法背景及其参考链接（MIT、TAMU 主机被代理拒绝；`theomission/glsl-lut` 仓库存在）。
+- 第 4.2 表中各 key 的中文名是否与最新官方文档完全一致（只核对了 ResourceTool.py 和 `.config_file`）。
