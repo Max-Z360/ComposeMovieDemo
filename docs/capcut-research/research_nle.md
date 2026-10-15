@@ -140,7 +140,7 @@ CapCut 8.x 共 54 个，新增 `common_mask`、`placeholder_infos`、`audio_pann
 - capcut-cli-david 声称 CapCut 8.x UI 输出的顺序是**按位置固定**的：video `[speeds, placeholder_infos, (transition | mask), canvases, sound_channel_mappings, material_colors, (loudnesses), vocal_separations]`；audio `[speeds, placeholder_infos, sound_channel_mappings, vocal_separations]`；text / sticker `[material_animations]`；effect / filter `[]`。[第三方，与上一条矛盾，说明引擎多半是按 id 查 materials 再按类型归类，"按位置"只是 UI 输出的习惯——推断]
 
 ### 2.7 关键帧
-- `segment.common_keyframes[] = {id, material_id:"", property_type, keyframe_list:[{id, curveType:"Line"|"EaseIn"|"EaseOut"|"FreeCurveInOut", graphID, left_control{x,y}, right_control{x,y}, time_offset(µs，相对片段起点), values:[v], string_value}]}`。
+- `segment.common_keyframes[] = {id, material_id:"", property_type, keyframe_list:[{id, curveType:"Line"（汇总时核对 pyJianYingDraft keyframe.py：只出现 "Line"；其他取值未能核实）, graphID, left_control{x,y}, right_control{x,y}, time_offset(µs，相对片段起点), values:[v], string_value}]}`。
 - `property_type` 取值：`KFTypePositionX/Y`、`KFTypeRotation`、`KFTypeScaleX/Y`、`UNIFORM_SCALE`、`KFTypeAlpha`、`KFTypeSaturation`、`KFTypeContrast`、`KFTypeBrightness`、`KFTypeVolume`。[确认 pyJianYingDraft keyframe.py]
 - 贝塞尔缓动：`graphID` 指向顶层 `keyframe_graph_list[]{id, resource_id, resource_name:"Cubic Out", graph_points[]}`，曲线预设本身也是云端资源。[第三方]
 - 顶层 `keyframes{videos,audios,texts,stickers,filters,adjusts,handwrites,effects}` 是旧版分桶结构，现在一般都为空。
@@ -153,7 +153,7 @@ CapCut 8.x 共 54 个，新增 `common_mask`、`placeholder_infos`、`audio_pann
 
 ### 2.9 加密
 - [第三方] 剪映 6.0+ 把 `draft_content.json` 存成加密的二进制，CapCut 国际版不加密。本笔记不讨论加密细节。
-- [确认-开源代码] pyJianYingDraft `draft_content_loader.py` 先尝试 UTF-8 JSON，失败后交给用户提供的 `fallback_loader`。README 写明"新版剪映中的 draft_content.json 往往不是可直接读取的明文 JSON"，剪映 7+ 隐藏了 UI 控件，所以自动导出只支持到 6.x。
+- [确认-开源代码] pyJianYingDraft `draft_content_loader.py` 先尝试 UTF-8 JSON，失败后交给用户提供的 `fallback_loader`。（汇总时核对：当前 README 没有提到加密，并把关键帧、蒙版、抠图等功能标为在剪映 10.8 上可用。旧版 README 的说法未能核实。）
 - **[推断]** 加密的目的是保护模板和付费素材，阻止第三方批量生产；这种做法把可写和可读分开：写入明文仍能被接受，读取被阻止。
 
 ### 2.10 draft_meta_info.json [确认-开源样例]
